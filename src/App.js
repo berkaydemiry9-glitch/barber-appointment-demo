@@ -402,3 +402,28 @@ function addMinutes(time, mins) {
   const d = new Date(2025, 0, 1, h, m + mins);
   return d.toTimeString().slice(0, 5);
 }
+import React, { useState } from "react";
+import AdminPanel from "./AdminPanel";
+// ... (diğer importlar ve kodun geri kalanı aynı)
+
+export default function App() {
+  const [adminMode, setAdminMode] = useState(false);
+
+  if (adminMode) {
+    return <AdminPanel onBack={() => setAdminMode(false)} />;
+  }
+
+  // ... (eski müşteri akışı burada, örn: steps 1-7)
+
+  return (
+    <div>
+      {/* Normal müşteri akışı kodun en altında bir yere bu butonu ekle */}
+      <button
+        onClick={() => setAdminMode(true)}
+        className="fixed bottom-4 right-4 px-5 py-3 rounded-xl bg-accent text-primary font-semibold shadow hover:bg-primary hover:text-white"
+      >
+        Go to Admin Panel
+      </button>
+    </div>
+  );
+}
