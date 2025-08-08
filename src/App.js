@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import AdminPanel from "./AdminPanel";
+import AdminLogin from "./AdminLogin";
 import { getAvailableSlots, getNext7Days } from "./calendarUtils";
 import "./index.css";
 
@@ -69,7 +70,9 @@ function addMinutes(time, mins) {
 }
 
 export default function App() {
-  const [adminMode, setAdminMode] = useState(false);
+  // ADMIN PANEL URL
+  const adminPath = "/superbarberadmin";
+  const [isAdminLogged, setIsAdminLogged] = useState(false);
 
   // Customer flow states
   const [step, setStep] = useState(1);
@@ -80,8 +83,19 @@ export default function App() {
   const [customer, setCustomer] = useState({ name: "", phone: "", email: "" });
   const [payment, setPayment] = useState("");
 
-  if (adminMode) {
-    return <AdminPanel onBack={() => setAdminMode(false)} />;
+  // Admin panel erişimi sadece özel URL ile mümkün!
+  if (window.location.pathname === adminPath) {
+    if (!isAdminLogged) {
+      return (
+        <AdminLogin
+          onSuccess={() => setIsAdminLogged(true)}
+          onCancel={() => { window.location.pathname = "/"; }}
+        />
+      );
+    }
+    return (
+      <AdminPanel onBack={() => { setIsAdminLogged(false); window.location.pathname = "/"; }} />
+    );
   }
 
   // Step 1: Select Services
@@ -126,12 +140,6 @@ export default function App() {
             Next
           </button>
         </div>
-        <button
-          onClick={() => setAdminMode(true)}
-          className="fixed bottom-4 right-4 px-5 py-3 rounded-xl bg-accent text-primary font-semibold shadow hover:bg-primary hover:text-white"
-        >
-          Go to Admin Panel
-        </button>
       </div>
     );
   }
@@ -163,12 +171,6 @@ export default function App() {
             Back
           </button>
         </div>
-        <button
-          onClick={() => setAdminMode(true)}
-          className="fixed bottom-4 right-4 px-5 py-3 rounded-xl bg-accent text-primary font-semibold shadow hover:bg-primary hover:text-white"
-        >
-          Go to Admin Panel
-        </button>
       </div>
     );
   }
@@ -244,12 +246,6 @@ export default function App() {
             </button>
           </div>
         </div>
-        <button
-          onClick={() => setAdminMode(true)}
-          className="fixed bottom-4 right-4 px-5 py-3 rounded-xl bg-accent text-primary font-semibold shadow hover:bg-primary hover:text-white"
-        >
-          Go to Admin Panel
-        </button>
       </div>
     );
   }
@@ -306,12 +302,6 @@ export default function App() {
             </button>
           </div>
         </div>
-        <button
-          onClick={() => setAdminMode(true)}
-          className="fixed bottom-4 right-4 px-5 py-3 rounded-xl bg-accent text-primary font-semibold shadow hover:bg-primary hover:text-white"
-        >
-          Go to Admin Panel
-        </button>
       </div>
     );
   }
@@ -363,12 +353,6 @@ export default function App() {
             </button>
           </div>
         </div>
-        <button
-          onClick={() => setAdminMode(true)}
-          className="fixed bottom-4 right-4 px-5 py-3 rounded-xl bg-accent text-primary font-semibold shadow hover:bg-primary hover:text-white"
-        >
-          Go to Admin Panel
-        </button>
       </div>
     );
   }
@@ -404,12 +388,6 @@ export default function App() {
             Back
           </button>
         </div>
-        <button
-          onClick={() => setAdminMode(true)}
-          className="fixed bottom-4 right-4 px-5 py-3 rounded-xl bg-accent text-primary font-semibold shadow hover:bg-primary hover:text-white"
-        >
-          Go to Admin Panel
-        </button>
       </div>
     );
   }
@@ -443,12 +421,6 @@ export default function App() {
           Book Another
         </button>
       </div>
-      <button
-        onClick={() => setAdminMode(true)}
-        className="fixed bottom-4 right-4 px-5 py-3 rounded-xl bg-accent text-primary font-semibold shadow hover:bg-primary hover:text-white"
-      >
-        Go to Admin Panel
-      </button>
     </div>
   );
 }
