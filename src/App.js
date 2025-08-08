@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import "./index.css";
+import AdminPanel from "./AdminPanel";
 import { getAvailableSlots, getNext7Days } from "./calendarUtils";
+import "./index.css";
 
 // --- Services: name, icon, duration (minutes)
 const servicesList = [
@@ -31,7 +32,7 @@ const barbersList = [
       { start: "10:00", end: "17:00" }  // Saturday (shorter day)
     ],
     appointments: [
-      // Example: an appointment on Monday, Aug 12: 10:00-10:45
+      // Example: an appointment on Monday, Aug 11: 10:00-10:45
       { date: "2025-08-11", start: "10:00", end: "10:45" }
     ]
   },
@@ -60,7 +61,17 @@ function sumDurations(selectedNames) {
     .reduce((a, b) => a + b.duration, 0);
 }
 
+// Utility: add minutes to "HH:MM" string
+function addMinutes(time, mins) {
+  const [h, m] = time.split(":").map(Number);
+  const d = new Date(2025, 0, 1, h, m + mins);
+  return d.toTimeString().slice(0, 5);
+}
+
 export default function App() {
+  const [adminMode, setAdminMode] = useState(false);
+
+  // Customer flow states
   const [step, setStep] = useState(1);
   const [selectedServices, setSelectedServices] = useState([]);
   const [selectedBarber, setSelectedBarber] = useState(null);
@@ -68,6 +79,10 @@ export default function App() {
   const [slot, setSlot] = useState("");
   const [customer, setCustomer] = useState({ name: "", phone: "", email: "" });
   const [payment, setPayment] = useState("");
+
+  if (adminMode) {
+    return <AdminPanel onBack={() => setAdminMode(false)} />;
+  }
 
   // Step 1: Select Services
   if (step === 1) {
@@ -111,6 +126,12 @@ export default function App() {
             Next
           </button>
         </div>
+        <button
+          onClick={() => setAdminMode(true)}
+          className="fixed bottom-4 right-4 px-5 py-3 rounded-xl bg-accent text-primary font-semibold shadow hover:bg-primary hover:text-white"
+        >
+          Go to Admin Panel
+        </button>
       </div>
     );
   }
@@ -142,6 +163,12 @@ export default function App() {
             Back
           </button>
         </div>
+        <button
+          onClick={() => setAdminMode(true)}
+          className="fixed bottom-4 right-4 px-5 py-3 rounded-xl bg-accent text-primary font-semibold shadow hover:bg-primary hover:text-white"
+        >
+          Go to Admin Panel
+        </button>
       </div>
     );
   }
@@ -217,6 +244,12 @@ export default function App() {
             </button>
           </div>
         </div>
+        <button
+          onClick={() => setAdminMode(true)}
+          className="fixed bottom-4 right-4 px-5 py-3 rounded-xl bg-accent text-primary font-semibold shadow hover:bg-primary hover:text-white"
+        >
+          Go to Admin Panel
+        </button>
       </div>
     );
   }
@@ -273,6 +306,12 @@ export default function App() {
             </button>
           </div>
         </div>
+        <button
+          onClick={() => setAdminMode(true)}
+          className="fixed bottom-4 right-4 px-5 py-3 rounded-xl bg-accent text-primary font-semibold shadow hover:bg-primary hover:text-white"
+        >
+          Go to Admin Panel
+        </button>
       </div>
     );
   }
@@ -324,6 +363,12 @@ export default function App() {
             </button>
           </div>
         </div>
+        <button
+          onClick={() => setAdminMode(true)}
+          className="fixed bottom-4 right-4 px-5 py-3 rounded-xl bg-accent text-primary font-semibold shadow hover:bg-primary hover:text-white"
+        >
+          Go to Admin Panel
+        </button>
       </div>
     );
   }
@@ -359,6 +404,12 @@ export default function App() {
             Back
           </button>
         </div>
+        <button
+          onClick={() => setAdminMode(true)}
+          className="fixed bottom-4 right-4 px-5 py-3 rounded-xl bg-accent text-primary font-semibold shadow hover:bg-primary hover:text-white"
+        >
+          Go to Admin Panel
+        </button>
       </div>
     );
   }
@@ -392,32 +443,6 @@ export default function App() {
           Book Another
         </button>
       </div>
-    </div>
-  );
-}
-
-// Utility: add minutes to "HH:MM" string
-function addMinutes(time, mins) {
-  const [h, m] = time.split(":").map(Number);
-  const d = new Date(2025, 0, 1, h, m + mins);
-  return d.toTimeString().slice(0, 5);
-}
-import React, { useState } from "react";
-import AdminPanel from "./AdminPanel";
-// ... (diğer importlar ve kodun geri kalanı aynı)
-
-export default function App() {
-  const [adminMode, setAdminMode] = useState(false);
-
-  if (adminMode) {
-    return <AdminPanel onBack={() => setAdminMode(false)} />;
-  }
-
-  // ... (eski müşteri akışı burada, örn: steps 1-7)
-
-  return (
-    <div>
-      {/* Normal müşteri akışı kodun en altında bir yere bu butonu ekle */}
       <button
         onClick={() => setAdminMode(true)}
         className="fixed bottom-4 right-4 px-5 py-3 rounded-xl bg-accent text-primary font-semibold shadow hover:bg-primary hover:text-white"
