@@ -23,10 +23,12 @@ body {
 .barber-pole {
   width: 42px;
   height: 120px;
-  background: url('/barber-pole.svg') no-repeat center/contain;
+  background-size: contain;
+  background-repeat: no-repeat;
   display: inline-block;
 }
 
+/* Cards */
 .barber-card {
   background: #fff6ec;
   border: 2px solid #b93434;
@@ -43,12 +45,12 @@ body {
   border: none;
   font-weight: bold;
   padding: 0.7em 1.7em;
-  font-size: 1.15rem;
+  font-size: 1.05rem;
   box-shadow: 0 2px 8px #b9343430;
   transition: 0.2s;
   cursor: pointer;
 }
-.barber-btn:hover {
+.barber-btn:hover:not(:disabled) {
   background: linear-gradient(90deg, #f6c453 0%, #b93434 100%);
   color: #2d0808;
 }
@@ -56,7 +58,7 @@ body {
 .barber-services {
   display: flex;
   flex-wrap: wrap;
-  gap: 1.5rem;
+  gap: 1.2rem;
   justify-content: center;
   margin-bottom: 2rem;
 }
@@ -64,41 +66,52 @@ body {
   background: #f6c45311;
   border: 2px solid #b9343450;
   border-radius: 1.2rem;
-  padding: 1.2rem 2rem;
-  font-size: 1.2rem;
+  padding: 1.1rem 1.4rem;
+  font-size: 1.05rem;
   color: #1a2233;
   font-weight: 500;
   display: flex;
   align-items: center;
-  gap: 0.7em;
-  transition: background 0.2s, border 0.2s;
+  gap: 0.6em;
+  transition: background 0.2s, border 0.2s, transform 0.15s;
   cursor: pointer;
+}
+.barber-service:hover {
+  border-color: #b93434;
+  background: #f6c45322;
 }
 .barber-service.selected {
   background: #b93434;
   color: #fff;
   border: 2px solid #f6c453;
+  transform: translateY(-2px);
 }
 
-input, select {
+input {
   font-family: inherit;
   font-size: 1rem;
-  border-radius: 0.6rem;
+  border-radius: 0.8rem;
   border: 1.5px solid #b9343430;
-  padding: 0.6em 1em;
+  padding: 0.7em 1em;
   margin-bottom: 1rem;
   outline: none;
-  transition: border 0.2s;
+  transition: border 0.2s, box-shadow 0.2s;
+  width: 100%;
+  background: #fff;
 }
-input:focus, select:focus {
+input:focus {
   border: 1.5px solid #b93434;
+  box-shadow: 0 0 0 3px #b9343422;
 }
 
 ::-webkit-scrollbar {
   width: 10px;
-  background: #42221a33;
+}
+::-webkit-scrollbar-track {
+  background: #42221a55;
 }
 ::-webkit-scrollbar-thumb {
-  background: #b93434bb;
+  background: #b93434cc;
   border-radius: 8px;
+  border: 2px solid #42221a55;
 }
