@@ -1,6 +1,6 @@
 /* ===================================================================
    BARBER BOOKING THEME - Warm Brick / Tungsten Palette
-   v3.3 - Header Plate for Readability (reverted lighter title gradient)
+   v3.4 - Vivid Title + Compact Plate
    =================================================================== */
 
 :root {
@@ -42,25 +42,39 @@
 
   --bg-image: url("https://images.unsplash.com/photo-1585747860715-2ba37e788b70?q=80&w=1748&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D");
 
-  /* Header plate variables */
-  --hero-title-plate-bg: 15,12,10;                  /* RGB as numbers */
-  --hero-title-plate-border: rgba(255,255,255,.08);
-  --hero-title-plate-blur: 12px;
-  --hero-title-plate-alpha-scale: 1;                /* overall intensity multiplier */
+  /* === Vivid Title Palette === */
+  --title-vivid-1: #ffffff;
+  --title-vivid-2: #fff1e2;
+  --title-vivid-3: #f8d4ac;
+  --title-vivid-4: #e9b573;
+  --title-vivid-5: #d7953e;
+  /* Daha agresif altın istersek 5'i #e9a64d yapabilirsin */
 
-  /* Title gradient (original you liked) */
-  --title-grad: linear-gradient(92deg,#fff8f1 0%,#f2dcc4 40%,#d3b497 78%,#b18d6c 100%);
-  --title-shadow1: 0 1px 1px rgba(0,0,0,.55);
-  --title-shadow2: 0 2px 4px rgba(0,0,0,.55);
-  --title-glow-soft: 0 0 6px rgba(230,190,150,.35);
-  --title-glow-wide: 0 0 22px rgba(200,150,95,.28);
+  --title-gradient-vivid: linear-gradient(
+    95deg,
+    var(--title-vivid-1) 0%,
+    var(--title-vivid-2) 25%,
+    var(--title-vivid-3) 52%,
+    var(--title-vivid-4) 77%,
+    var(--title-vivid-5) 100%
+  );
 
-  --title-gradient: linear-gradient(92deg,#fff8f1 0%,#f2dcc4 40%,#d3b497 78%,#b18d6c 100%);
-  --title-shadow-stack: 
-    0 1px 1px rgba(0,0,0,.55),
-    0 2px 4px rgba(0,0,0,.55),
-    0 0 6px rgba(230,190,150,.28),
-    0 0 18px rgba(200,150,95,.22);
+  /* Glow & stroke yoğunlukları (kolay ayar) */
+  --title-stroke-color: rgba(0,0,0,.55);
+  --title-stroke-strong: rgba(0,0,0,.78);
+  --title-glow-core-color: rgba(255,220,160,.55);
+  --title-glow-wide-color: rgba(210,150,80,.40);
+  --title-glow-core-opacity: 1;  /* 0.8 – 1.2 arasında ayarla */
+  --title-glow-wide-opacity: 1;
+
+  /* Header plate ayarları */
+  --hero-title-plate-bg: 18,14,12;
+  --hero-title-plate-alpha-scale: 0.92; /* 0.7 daha şeffaf, 1 daha koyu */
+  --hero-title-plate-border: rgba(255,255,255,.09);
+  --hero-title-plate-blur: 14px;
+
+  /* Subtext parlaklık */
+  --subtext-color: #e6dbd4;
 }
 
 /* ================= GLOBAL / SCROLL LOCK ================= */
@@ -101,28 +115,23 @@ body::after {
   content:"";
   position:fixed; inset:0;
   background:
-    radial-gradient(circle at 50% 38%, rgba(255,200,120,0.045), rgba(0,0,0,0) 34%),
+    radial-gradient(circle at 50% 38%, rgba(255,200,120,0.035), rgba(0,0,0,0) 32%),
     radial-gradient(ellipse at 50% 52%, rgba(0,0,0,0) 42%, rgba(0,0,0,0.55) 80%, rgba(0,0,0,0.78) 100%),
-    radial-gradient(circle at 16% 18%, rgba(255,204,140,0.085), transparent 56%),
-    radial-gradient(circle at 85% 22%, rgba(255,204,140,0.065), transparent 63%);
-  mix-blend-mode: normal;
-  opacity:.74;
+    radial-gradient(circle at 16% 18%, rgba(255,204,140,0.075), transparent 56%),
+    radial-gradient(circle at 85% 22%, rgba(255,204,140,0.06), transparent 63%);
+  opacity:.72;
   z-index:1;
   pointer-events:none;
 }
 
-/* Layer ordering */
 .app-shell,
 .services-panel,
 .hero-section,
 .progress-steps { position:relative; z-index:5; }
 
-/* ================= TYPOGRAPHY / HERO ================= */
+/* ================= TYPO / HERO ================= */
 h1,h2,h3,h4 { margin:0; font-weight:600; letter-spacing:.5px; }
 a { color: var(--color-primary-amber-bright); text-decoration:none; }
-
-.fade-in { animation: fadeIn .55s ease; }
-@keyframes fadeIn { from {opacity:0; transform:translateY(6px);} to {opacity:1; transform:translateY(0);} }
 
 .app-shell {
   width:100%;
@@ -137,11 +146,12 @@ a { color: var(--color-primary-amber-bright); text-decoration:none; }
 
 .hero-section {
   text-align:center;
-  max-width:1080px;
-  padding:.9rem 1.4rem .95rem;
+  max-width:1100px;
+  padding:.85rem 1.4rem .85rem;
   position:relative;
-  /* hafif genel halo (arka) */
 }
+
+/* Geniş, yumuşak halo (arka) */
 .hero-section::before {
   content:"";
   position:absolute;
@@ -150,71 +160,114 @@ a { color: var(--color-primary-amber-bright); text-decoration:none; }
   width:min(100%,1000px);
   height:160px;
   background:
-    radial-gradient(ellipse at 50% 50%, rgba(20,16,14,0.65) 0%, rgba(15,12,10,0.5) 40%, rgba(15,12,10,0.25) 68%, rgba(15,12,10,0) 100%);
-  filter: blur(24px);
-  z-index:-2;
+    radial-gradient(ellipse at 50% 50%, rgba(22,17,15,0.58) 0%, rgba(18,14,12,0.46) 40%, rgba(18,14,12,0.22) 68%, rgba(18,14,12,0) 100%);
+  filter: blur(26px);
+  z-index:-3;
   pointer-events:none;
   border-radius:200px;
 }
 
-/* LOCAL HEADER PLATE (asıl readability artırıcı) */
+/* Kompakt plate – sadece başlık & subtext arkasında */
 .hero-section::after {
   content:"";
   position:absolute;
-  inset:0;
-  margin:auto;
-  width: clamp(360px, 78%, 980px);
-  height: clamp(96px, 24vh, 165px);
-  top: 4px;
+  left:50%;
+  top:8px;
+  transform:translateX(-50%);
+  width: clamp(360px, 62%, 860px);
+  height: 118px;
   background:
-    linear-gradient(140deg,
-      rgba(var(--hero-title-plate-bg), calc(.72 * var(--hero-title-plate-alpha-scale))),
-      rgba(var(--hero-title-plate-bg), calc(.62 * var(--hero-title-plate-alpha-scale))) 55%,
-      rgba(var(--hero-title-plate-bg), calc(.50 * var(--hero-title-plate-alpha-scale))) 100%);
-  backdrop-filter: blur(var(--hero-title-plate-blur)) saturate(1.2);
-  -webkit-backdrop-filter: blur(var(--hero-title-plate-blur)) saturate(1.2);
+    linear-gradient(165deg,
+      rgba(var(--hero-title-plate-bg), calc(.82 * var(--hero-title-plate-alpha-scale))) 0%,
+      rgba(var(--hero-title-plate-bg), calc(.70 * var(--hero-title-plate-alpha-scale))) 55%,
+      rgba(var(--hero-title-plate-bg), calc(.52 * var(--hero-title-plate-alpha-scale))) 100%);
+  backdrop-filter: blur(var(--hero-title-plate-blur)) saturate(1.25);
+  -webkit-backdrop-filter: blur(var(--hero-title-plate-blur)) saturate(1.25);
   border:1px solid var(--hero-title-plate-border);
   box-shadow:
-    0 8px 28px -12px rgba(0,0,0,.55),
-    0 2px 10px -4px rgba(0,0,0,.55),
-    0 0 0 1px rgba(255,255,255,.03);
-  border-radius: 42px;
-  z-index:-1;
+    0 10px 34px -14px rgba(0,0,0,.65),
+    0 4px 14px -6px rgba(0,0,0,.55),
+    0 0 0 1px rgba(255,255,255,.03),
+    inset 0 1px 0 rgba(255,255,255,.07),
+    inset 0 -4px 12px -6px rgba(0,0,0,.5);
+  border-radius: 38px;
+  z-index:-2;
   pointer-events:none;
+  /* Kenarlarda hafif kararma için mask */
+  mask: radial-gradient(circle at 50% 50%, rgba(0,0,0,1) 75%, rgba(0,0,0,0) 100%);
 }
 
-/* Title (reverted gradient) */
+/* Vivid Title */
 .h1-brand {
-  font-size: clamp(2.05rem, 3.9vw, 2.7rem);
-  line-height: 1.06;
-  background: var(--title-gradient);
+  font-size: clamp(2.15rem, 4.0vw, 2.85rem);
+  line-height:1.05;
+  background: var(--title-gradient-vivid);
   -webkit-background-clip: text;
   color: transparent;
-  font-weight: 700;
-  letter-spacing: .8px;
-  margin-bottom: .55rem;
-  text-shadow: var(--title-shadow-stack);
-  filter: drop-shadow(0 2px 4px rgba(0,0,0,.50));
+  font-weight:700;
+  letter-spacing:.85px;
+  margin-bottom:.55rem;
+  position:relative;
+
+  /* İnce stroke */
+  -webkit-text-stroke: 1px var(--title-stroke-color);
+
+  /* Çok katmanlı shadow (koyu kontur + altın halo) */
+  text-shadow:
+    0 0 1px var(--title-stroke-strong),
+    0 2px 3px var(--title-stroke-strong),
+    0 4px 8px rgba(0,0,0,.55),
+    0 0 6px rgba(255,225,180, calc(.55 * var(--title-glow-core-opacity))),
+    0 0 18px rgba(245,190,120, calc(.40 * var(--title-glow-wide-opacity))),
+    0 0 34px rgba(240,170,90, calc(.30 * var(--title-glow-wide-opacity)));
+
+  filter:
+    drop-shadow(0 3px 6px rgba(0,0,0,.55));
+  animation: titlePop .5s ease;
 }
 
-/* Subtext daha açık ve net */
+/* Opsiyonel parlak kayma efekti */
+.h1-brand--sheen::after {
+  content:"";
+  position:absolute;
+  inset:0;
+  background:
+    linear-gradient(115deg,
+      rgba(255,255,255,0) 8%,
+      rgba(255,255,255,.8) 12%,
+      rgba(255,255,255,0) 18%);
+  mix-blend-mode: screen;
+  animation: sheenMove 2.2s ease 0.3s both;
+  pointer-events:none;
+  border-radius:6px;
+}
+
+@keyframes sheenMove {
+  0% { transform: translateX(-60%) skewX(-12deg); opacity:0; }
+  10% { opacity:.9; }
+  55% { opacity:.85; }
+  100% { transform: translateX(120%) skewX(-12deg); opacity:0; }
+}
+
+@keyframes titlePop {
+  0% { opacity:0; transform: translateY(10px) scale(.97); }
+  100% { opacity:1; transform: translateY(0) scale(1); }
+}
+
 .subtext {
-  font-size:.95rem;
-  color:#e3d6ce;
+  font-size:.96rem;
+  color: var(--subtext-color);
   letter-spacing:.55px;
   font-weight:500;
   text-shadow:
-    0 1px 2px rgba(0,0,0,.75),
+    0 1px 2px rgba(0,0,0,.78),
     0 0 5px rgba(0,0,0,.5);
 }
 
-/* ================= PROGRESS STEPS ================= */
+/* ================= PROGRESS STEPS (değişmedi) ================= */
 .progress-steps {
-  display:flex;
-  justify-content:center;
-  gap:.75rem;
-  margin:.15rem 0 .75rem;
-  flex-wrap:wrap;
+  display:flex; justify-content:center; gap:.75rem;
+  margin:.15rem 0 .75rem; flex-wrap:wrap;
 }
 .step-node {
   width:34px; height:34px; border-radius:50%;
@@ -238,7 +291,7 @@ a { color: var(--color-primary-amber-bright); text-decoration:none; }
   box-shadow:0 4px 12px -5px rgba(201,154,68,.5);
 }
 
-/* ================= PANEL ================= */
+/* ================= PANEL & CARDS (eski sürümle aynı) ============ */
 .services-panel {
   width:100%; max-width:1060px;
   background:linear-gradient(155deg, rgba(38,26,21,.78), rgba(30,21,17,.82) 55%, rgba(26,18,15,.87) 100%);
@@ -255,7 +308,6 @@ a { color: var(--color-primary-amber-bright); text-decoration:none; }
   mix-blend-mode:overlay; pointer-events:none;
 }
 
-/* ================= SERVICES GRID & CARDS ================= */
 .services-grid {
   display:grid;
   grid-template-columns:repeat(auto-fit,minmax(142px,1fr));
@@ -488,13 +540,14 @@ input:focus {
   .progress-steps { gap:.5rem; }
   .step-node { width:30px; height:30px; font-size:.64rem; }
   .review-actions { position:static; margin-bottom:.45rem; }
-  .h1-brand { font-size:clamp(1.85rem,5.2vw,2.4rem); }
-  .hero-section::after { width:90%; height:140px; }
+  .h1-brand { font-size:clamp(1.95rem,5.3vw,2.55rem); }
+  .hero-section::after { width:88%; height:110px; }
 }
 
-/* ================= QUICK TWEAKS (comment/uncomment) ================
-   Plate opaklığını artır: :root { --hero-title-plate-alpha-scale: 1.15; }
-   Plate daha küçük: .hero-section::after { height:130px; }
-   Arka plan biraz daha aydın: body::before { filter: blur(2.8px) saturate(1.05) brightness(0.82); }
-   Plate iptal: .hero-section::after { display:none; }
-===================================================================== */
+/* ====== QUICK TWEAKS ======
+   Daha şeffaf plate: :root { --hero-title-plate-alpha-scale: 0.75; }
+   Daha parlak altın: :root { --title-vivid-4:#f1bd7a; --title-vivid-5:#e9a64d; }
+   Glow azalt: :root { --title-glow-core-opacity:.65; --title-glow-wide-opacity:.6; }
+   Sheen aç: <h1 class="h1-brand h1-brand--sheen"> ... </h1>
+   Plate kapat: .hero-section::after {display:none;}
+*/
