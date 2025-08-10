@@ -1,0 +1,41 @@
+body {
+  background: linear-gradient(120deg, #1a2233 0%, #42221a 100%);
+  min-height: 100vh;
+  font-family: 'Playball', cursive, 'Arial', sans-serif;
+}
+.barber-header {
+  font-family: 'Playball', cursive, 'Arial', sans-serif;
+  font-size: 3rem;
+  color: #f6c453;
+  text-shadow: 2px 2px 10px #2d0808;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.barber-pole {
+  width: 36px;
+  height: 36px;
+  background: url('/barber-pole.png') no-repeat center/contain;
+  display: inline-block;
+}
+.barber-card {
+  background: #fff6ec;
+  border: 2px solid #b93434;
+  border-radius: 2rem;
+  box-shadow: 0 4px 32px #1a223355;
+  padding: 2rem;
+}
+.barber-btn {
+  background: linear-gradient(90deg, #b93434 0%, #1a2233 100%);
+  color: #fff;
+  border-radius: 1rem;
+  border: none;
+  font-weight: bold;
+  padding: 0.7em 1.7em;
+  box-shadow: 0 2px 8px #b9343430;
+  transition: 0.2s;
+}
+.barber-btn:hover {
+  background: linear-gradient(90deg, #f6c453 0%, #b93434 100%);
+  color: #2d0808;
+}
