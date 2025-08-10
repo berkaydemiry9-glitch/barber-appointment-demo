@@ -24,6 +24,21 @@
   --color-border-soft: #32231d;
   --color-danger: #d4544c;
 
+  --slot-bg-light: #FFFFFF;
+  --slot-bg-light-hover: #faf7f5;
+  --slot-border-light: #d9cdc5;
+  --slot-border-light-hover: #bfae9f;
+  --slot-text-dark: #17110d;
+  --slot-text-dark-soft: #2a1e18;
+  --slot-text-disabled: #a79c94;
+  --slot-bg-disabled: #f1ece9;
+  --slot-bg-selected-start: #b56516;
+  --slot-bg-selected-end: #8e470f;
+  --slot-border-selected: #a95715;
+  --slot-bg-dark: linear-gradient(145deg,#3a2821,#271a15);
+  --slot-bg-dark-hover: linear-gradient(145deg,#463026,#2f1f18);
+  --slot-bg-dark-selected: linear-gradient(150deg,#d5852b,#a95715); 
+
   /* ---------- Global Overlay ---------- */
   --color-overlay-grad1: rgba(12,9,8,0.80);
   --color-overlay-grad2: rgba(12,9,8,0.88);
@@ -788,3 +803,148 @@ input:focus {
   border-color:#16347f;
 }
 */
+/* ==== TIME / DATE CONTRAST PATCH (Light Pill Variant v1) ==== */
+
+/* Ortak temel stil (tüm slot / pill tipleri) */
+.schedule-grid .time-slot,
+.schedule-grid .slot,
+.time-slot,
+.slot-pill,
+.slot-button {
+  background: var(--slot-bg-light) !important;
+  color: var(--slot-text-dark) !important;
+  font-weight: 600;
+  letter-spacing: .55px;
+  font-size: .72rem;
+  line-height: 1.05;
+  padding: .60rem .70rem .55rem;
+  border: 1px solid var(--slot-border-light);
+  border-radius: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .25rem;
+  cursor: pointer;
+  user-select: none;
+  position: relative;
+  text-shadow: none;
+  transition: background .18s ease, border-color .18s ease,
+              box-shadow .25s cubic-bezier(.4,.2,.2,1),
+              transform .18s;
+  box-shadow: 0 1px 2px rgba(0,0,0,.12), 0 0 0 1px rgba(0,0,0,.04);
+}
+
+/* Gün / tarih pilleri */
+.date-pill,
+.date-item,
+.day-pill,
+.day-button,
+.date-tabs button,
+.date-selector .pill,
+.date-selector button {
+  background: var(--slot-bg-light) !important;
+  color: var(--slot-text-dark) !important;
+  font-weight: 650;
+  letter-spacing: .6px;
+  font-size: .68rem;
+  border: 1px solid var(--slot-border-light);
+  border-radius: 20px;
+  padding: .65rem 1.1rem .60rem;
+  text-shadow: none;
+  box-shadow: 0 1px 2px rgba(0,0,0,.10), 0 0 0 1px rgba(0,0,0,.04);
+  transition: background .18s ease, border-color .18s ease,
+              box-shadow .25s, transform .18s;
+}
+
+/* Hover */
+.schedule-grid .time-slot:hover:not(.selected):not(.unavailable),
+.date-pill:hover:not(.active):not(.disabled):not([aria-disabled="true"]) {
+  background: var(--slot-bg-light-hover) !important;
+  border-color: var(--slot-border-light-hover);
+  box-shadow: 0 4px 10px -4px rgba(0,0,0,.18), 0 0 0 1px rgba(0,0,0,.05);
+  transform: translateY(-2px);
+}
+
+/* Focus (klavye erişilebilirlik) */
+.schedule-grid .time-slot:focus-visible,
+.date-pill:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 2px rgba(255,255,255,.95),
+    0 0 0 5px rgba(181,101,22,.55),
+    0 4px 10px -4px rgba(0,0,0,.35);
+}
+
+/* Seçili */
+.schedule-grid .time-slot.selected,
+.schedule-grid .slot.selected,
+.time-slot.selected,
+.slot-pill.selected,
+.date-pill.active,
+.date-pill.is-active,
+.day-button.active,
+.date-tabs button[aria-selected="true"] {
+  background: linear-gradient(135deg,var(--slot-bg-selected-start),var(--slot-bg-selected-end)) !important;
+  border-color: var(--slot-border-selected);
+  color: #fff !important;
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,.15),
+    0 6px 16px -6px rgba(0,0,0,.65),
+    0 0 0 6px rgba(181,101,22,.12);
+  text-shadow: 0 1px 2px rgba(0,0,0,.45);
+  transform: translateY(-2px);
+}
+
+/* Koyu varyant (isteğe bağlı ek sınıf) */
+.time-slot--dark {
+  background: var(--slot-bg-dark) !important;
+  color: #f5efe9 !important;
+  border: 1px solid rgba(255,255,255,.06);
+  text-shadow: 0 1px 2px rgba(0,0,0,.55);
+  box-shadow: 0 2px 6px -2px rgba(0,0,0,.55), 0 0 0 1px rgba(0,0,0,.35);
+}
+.time-slot--dark:hover:not(.selected):not(.unavailable) {
+  background: var(--slot-bg-dark-hover) !important;
+  border-color: #b8682c;
+}
+.time-slot--dark.selected {
+  background: var(--slot-bg-dark-selected) !important;
+  border-color: var(--slot-border-selected);
+  color:#fff;
+}
+
+/* Disabled / Unavailable */
+.time-slot.unavailable,
+.slot-pill[disabled],
+.time-slot[disabled],
+.date-pill.disabled,
+.date-pill[aria-disabled="true"] {
+  background: var(--slot-bg-disabled) !important;
+  color: var(--slot-text-disabled) !important;
+  border-color: #e4d9d2 !important;
+  cursor: not-allowed;
+  text-decoration: line-through;
+  box-shadow: 0 0 0 1px rgba(0,0,0,.04);
+  transform: none;
+}
+
+/* XS varyant (isteğe bağlı) */
+.time-slot--xs {
+  padding:.45rem .55rem .42rem;
+  font-size:.62rem;
+  letter-spacing:.55px;
+}
+
+/* İç öğeler (span, strong) aynı rengi miras alsın */
+.time-slot *:where(span,strong),
+.date-pill *:where(span,strong) {
+  color: inherit !important;
+}
+
+/* ---- Kontrast Notları ----
+Light normal: #17110d / #ffffff ≈ 14:1
+Selected amber (üst ton ~#b56516) / #ffffff ≈ 4.7:1 (bold uppercase yeterli)
+Disabled: kasıtlı olarak daha düşük kontrast (interaktif değil)
+*/
+/* ==== END TIME / DATE CONTRAST PATCH ==== */
+
