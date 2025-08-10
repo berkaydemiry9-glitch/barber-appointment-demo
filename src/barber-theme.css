@@ -739,6 +739,78 @@ input:focus {
   .barbers-grid { grid-template-columns:repeat(auto-fill,minmax(130px,1fr)); gap:.55rem; }
   .barber-card { min-height:126px; padding:.65rem .6rem .6rem; }
   .barber-avatar { width:50px; height:50px; border-radius:14px; }
+
+/* =========================================
+   DATE & TIME PILLS - TEXT COLOR TO BLACK
+   ========================================= */
+
+/* Tarih (gün) butonları – genel */
+.date-pill,
+.date-item,
+.day-pill,
+.day-button,
+.date-selector .pill,
+.date-selector button,
+.date-tabs button {
+  color:#111 !important;
+  font-weight:650;
+  text-shadow:none;
+}
+
+/* Saat slotları (senin grid’inde beyaz zeminli) */
+.time-slot,
+.slot-pill,
+.slot-button,
+.schedule-grid .time-slot {
+  color:#111 !important;
+  font-weight:650;
+  text-shadow:none;
+}
+
+/* Eğer slotlar <button> ise */
+.schedule-grid button {
+  color:#111;
+  font-weight:650;
+}
+
+/* Disabled / unavailable görünümleri hafif gri kalsın */
+.time-slot.unavailable,
+.slot-pill[disabled],
+.date-pill.disabled,
+.date-pill[aria-disabled="true"] {
+  color:#b9b3af !important;
+  font-weight:600;
+}
+
+/* Seçili durum (mavi / amber / koyu zemin) */
+.date-pill.active,
+.date-pill.is-active,
+.day-button.active,
+.date-tabs button[aria-selected="true"],
+.time-slot.selected,
+.slot-pill.selected,
+.schedule-grid .time-slot.selected {
+  color:#fff !important;
+  text-shadow:0 1px 2px rgba(0,0,0,.35);
+}
+
+/* Hover’da siyah kalırken sınır/arka planın değişmesi durumunda ek kontrast */
+.date-pill:hover:not(.active),
+.time-slot:hover:not(.selected) {
+  color:#111;
+}
+
+/* Eğer component library tikrarlanmış inline color yazıyorsa – daha agresif override */
+.date-pill span,
+.time-slot span {
+  color:inherit !important;
+}
+
+/* (Opsiyonel) Mavi seçili pil tonunu yumuşatmak istersen
+.date-pill.active,
+.date-tabs button[aria-selected="true"] {
+  background:linear-gradient(135deg,#2850c5,#1d3f9f);
+  border-color:#16347f;
 }
 
 /* ===================================================================
