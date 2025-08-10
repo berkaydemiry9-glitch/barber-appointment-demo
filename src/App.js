@@ -1,47 +1,51 @@
-import barberPole from "./barber-pole.svg";
-
-// ...
-<div className="barber-header">
-  <span className="barber-pole" style={{ backgroundImage: `url(${barberPole})` }} />
-  Atlanta Barber Shop
-</div>
 import React, { useState } from "react";
 import "./barber-theme.css";
+import {
+  FaCut,
+  FaRazor,
+  FaChild,
+  FaHotTub,
+  FaAlignCenter,
+  FaUserTie,
+  FaWater,
+  FaSmile,
+  FaCheck
+} from "react-icons/fa";
 
-// Services (Atlanta)
+// ===== Data =====
 const servicesList = [
-  { name: "Haircut", icon: "💈", duration: 30 },
-  { name: "Beard Trim", icon: "🧔", duration: 20 },
-  { name: "Kids Haircut", icon: "🧒", duration: 25 },
-  { name: "Hot Towel Shave", icon: "🪒", duration: 25 },
-  { name: "Line Up", icon: "✂️", duration: 15 },
-  { name: "Fade", icon: "🎯", duration: 35 },
-  { name: "Shampoo & Style", icon: "🚿", duration: 20 },
-  { name: "Facial", icon: "🧖‍♂️", duration: 30 },
+  { key: "haircut", name: "Haircut", duration: 30, icon: FaCut },
+  { key: "beard", name: "Beard Trim", duration: 20, icon: FaRazor },
+  { key: "kids", name: "Kids Haircut", duration: 25, icon: FaChild },
+  { key: "hotTowel", name: "Hot Towel Shave", duration: 25, icon: FaHotTub },
+  { key: "lineup", name: "Line Up", duration: 15, icon: FaAlignCenter },
+  { key: "fade", name: "Fade", duration: 35, icon: FaUserTie },
+  { key: "shampoo", name: "Shampoo & Style", duration: 20, icon: FaWater },
+  { key: "facial", name: "Facial", duration: 30, icon: FaSmile }
 ];
 
-// Barbers
 const barbersList = [
   {
     name: "Mike Johnson",
     img: "https://randomuser.me/api/portraits/men/32.jpg",
     workingHours: [null,{start:"09:00",end:"19:00"},{start:"09:00",end:"19:00"},{start:"09:00",end:"19:00"},{start:"09:00",end:"19:00"},{start:"09:00",end:"19:00"},{start:"09:00",end:"17:00"}],
-    appointments: [],
+    appointments: []
   },
   {
     name: "Chris Evans",
     img: "https://randomuser.me/api/portraits/men/45.jpg",
     workingHours: [null,{start:"10:00",end:"18:00"},{start:"09:00",end:"18:00"},{start:"10:00",end:"19:00"},{start:"09:30",end:"18:30"},{start:"11:00",end:"19:00"},{start:"09:00",end:"16:00"}],
-    appointments: [],
-  },
+    appointments: []
+  }
 ];
 
-// Helpers
-function sumDurations(selectedNames) {
+// ===== Helpers =====
+function sumDurations(selectedKeys) {
   return servicesList
-    .filter((s) => selectedNames.includes(s.name))
+    .filter(s => selectedKeys.includes(s.key))
     .reduce((a, b) => a + b.duration, 0);
 }
+
 function getNext7Days() {
   const today = new Date();
   return Array.from({ length: 7 }).map((_, i) => {
@@ -49,50 +53,56 @@ function getNext7Days() {
     d.setDate(today.getDate() + i);
     return {
       dateStr: d.toISOString().split("T")[0],
-      label: d.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "2-digit" }),
-      dayIdx: d.getDay(),
+      label: d.toLocaleDateString("en-US", {
+        weekday: "short",
+        month: "short",
+        day: "2-digit"
+      }),
+      dayIdx: d.getDay()
     };
   });
 }
-function to12Hour(hour, minute) {
-  const ampm = hour >= 12 ? "PM" : "AM";
-  let h = hour % 12;
-  if (h === 0) h = 12;
-  return `${h}:${String(minute).padStart(2,"0")} ${ampm}`;
+
+function to12Hour(h, m) {
+  const ampm = h >= 12 ? "PM" : "AM";
+  let hour = h % 12;
+  if (hour === 0) hour = 12;
+  return `${hour}:${String(m).padStart(2, "0")} ${ampm}`;
 }
+
 function getAvailableSlots({ workingHours, appointments, totalDuration, dateStr, slotInterval = 30 }) {
   const d = new Date(dateStr);
   const dayIdx = d.getDay();
   const wh = workingHours[dayIdx];
   if (!wh) return [];
   const slots = [];
-  let [h,m] = wh.start.split(":").map(Number);
-  const [eh,em] = wh.end.split(":").map(Number);
-  const totalSlots = ((eh*60+em) - (h*60+m)) / slotInterval;
-  for (let i=0;i<totalSlots;i++){
-    const slotStart = (h*60+m) + i*slotInterval;
-    const slotEnd = slotStart + totalDuration;
-    if (slotEnd > (eh*60+em)) break;
-    const hour = Math.floor(slotStart/60);
-    const minute = slotStart % 60;
-    // (appointments overlap check can be added later)
-    slots.push(to12Hour(hour, minute));
+  let [h, m] = wh.start.split(":").map(Number);
+  const [eh, em] = wh.end.split(":").map(Number);
+  const totalSpan = (eh * 60 + em) - (h * 60 + m);
+  const steps = Math.floor(totalSpan / slotInterval);
+  for (let i = 0; i < steps; i++) {
+    const start = (h * 60 + m) + i * slotInterval;
+    const end = start + totalDuration;
+    if (end > (eh * 60 + em)) break;
+    // (Not implementing overlap logic here; placeholder.)
+    slots.push(to12Hour(Math.floor(start / 60), start % 60));
   }
   return slots;
 }
+
 function addMinutes(time, mins) {
   const [t, meridian] = time.split(" ");
   let [h, m] = t.split(":").map(Number);
   if (meridian === "PM" && h !== 12) h += 12;
   if (meridian === "AM" && h === 12) h = 0;
-  const d = new Date(2024,0,1,h,m+mins);
+  const d = new Date(2024, 0, 1, h, m + mins);
   let hour = d.getHours();
   const ampm = hour >= 12 ? "PM" : "AM";
-  hour = hour % 12;
-  hour = hour || 12;
-  return `${hour}:${String(d.getMinutes()).padStart(2,"0")} ${ampm}`;
+  hour = hour % 12 || 12;
+  return `${hour}:${String(d.getMinutes()).padStart(2, "0")} ${ampm}`;
 }
 
+// ===== Main Component =====
 export default function App() {
   const [step, setStep] = useState(1);
   const [selectedServices, setSelectedServices] = useState([]);
@@ -101,227 +111,456 @@ export default function App() {
   const [slot, setSlot] = useState("");
   const [customer, setCustomer] = useState({ name: "", phone: "", email: "" });
 
-  // Step 1
+  // --- STEP 1: Services (Homepage) ---
   if (step === 1) {
     const total = sumDurations(selectedServices);
     return (
-      <div style={layout}>
-        <div className="barber-header">
-          <span className="barber-pole" style={{ backgroundImage:`url(${barberPole})` }} />
-          Atlanta Barber Shop
+      <div className="app-shell fade-in">
+        <div className="hero-section">
+          <h1 className="h1-brand">
+            Atlanta Barber Shop
+          </h1>
+          <div className="subtext">Select your services</div>
         </div>
-        <div className="barber-card" style={{ maxWidth:600 }}>
-          <h2 style={title}>Choose Your Service(s)</h2>
-          <div className="barber-services">
-            {servicesList.map(s => (
-              <div
-                key={s.name}
-                className={`barber-service${selectedServices.includes(s.name) ? " selected":""}`}
-                onClick={() =>
-                  setSelectedServices(prev =>
-                    prev.includes(s.name) ? prev.filter(x=>x!==s.name) : [...prev, s.name]
-                  )
-                }
+
+        <div className="services-panel fade-in">
+          <div className="services-grid">
+            {servicesList.map(s => {
+              const Icon = s.icon;
+              const isSelected = selectedServices.includes(s.key);
+              return (
+                <button
+                  key={s.key}
+                  type="button"
+                  className={`service-card ${isSelected ? "selected" : ""}`}
+                  onClick={() =>
+                    setSelectedServices(prev =>
+                      prev.includes(s.key)
+                        ? prev.filter(k => k !== s.key)
+                        : [...prev, s.key]
+                    )
+                  }
+                  aria-pressed={isSelected}
+                >
+                  <span className="service-icon">
+                    <Icon />
+                  </span>
+                  <span className="service-name">{s.name}</span>
+                  <span className="service-duration">{s.duration} min</span>
+                  {isSelected && (
+                    <span className="badge-new" aria-label="Selected">
+                      <FaCheck style={{ fontSize: "0.6rem" }} />
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+
+          <div className="actions-bar">
+            <div className="total-duration">
+              Total Duration: <strong>{total} min</strong>
+            </div>
+            <div style={{ display: "flex", gap: ".6rem" }}>
+              <button
+                className="btn"
+                disabled={selectedServices.length === 0}
+                onClick={() => setStep(2)}
               >
-                <span style={{ fontSize:"1.7em" }}>{s.icon}</span>
-                <span>{s.name}</span>
-                <span style={{ fontSize:"0.85em", color:"#b93434", fontWeight:400 }}>{s.duration} min</span>
-              </div>
-            ))}
+                Next
+              </button>
+              <button
+                className="btn btn-secondary"
+                onClick={() => {
+                  setSelectedServices([]);
+                }}
+                disabled={selectedServices.length === 0}
+              >
+                Clear
+              </button>
+            </div>
           </div>
-          <div style={{ textAlign:"right", color:"#b93434", marginTop:10 }}>
-            <b>Total Duration:</b> {total} min
-          </div>
-          <button
-            className="barber-btn"
-            style={{ width:"100%", marginTop:24 }}
-            disabled={selectedServices.length===0}
-            onClick={()=>setStep(2)}
-          >Next</button>
         </div>
       </div>
     );
   }
 
-  // Step 2
+  // --- STEP 2: Barber Selection ---
   if (step === 2) {
     return (
-      <div style={layout}>
-        <div className="barber-header">
-          <span className="barber-pole" style={{ backgroundImage:`url(${barberPole})` }} />
-          Atlanta Barber Shop
+      <div className="app-shell fade-in">
+        <div className="hero-section">
+          <h1 className="h1-brand">Choose Your Barber</h1>
+          <div className="subtext">Step 2</div>
         </div>
-        <div className="barber-card" style={{ maxWidth:600 }}>
-          <h2 style={title}>Choose Your Barber</h2>
-          <div style={{ display:"flex", gap:30, justifyContent:"center", marginBottom:30, flexWrap:"wrap" }}>
-            {barbersList.map(b => (
-              <button
-                key={b.name}
-                onClick={()=>{ setSelectedBarber(b); setStep(3); }}
-                style={{
-                  border: selectedBarber?.name===b.name ? "2.5px solid #f6c453":"2px solid #b93434",
-                  background: selectedBarber?.name===b.name ? "#b93434":"#fff6ec",
-                  color: selectedBarber?.name===b.name ? "#fff":"#1a2233",
-                  borderRadius:16,
-                  padding:18,
-                  boxShadow:"0 1px 8px #1a223344",
-                  cursor:"pointer",
-                  minWidth:140,
-                  display:"flex",
-                  flexDirection:"column",
-                  alignItems:"center",
-                  gap:8,
-                  fontWeight:500,
-                  fontSize:"1.05em"
-                }}
-              >
-                <img src={b.img} alt={b.name} style={{ width:58, height:58, borderRadius:"50%", border:"2.5px solid #f6c453" }} />
-                {b.name}
-              </button>
-            ))}
+        <div className="services-panel fade-in" style={{ maxWidth: 820 }}>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit,minmax(180px,1fr))",
+              gap: "1rem",
+              marginBottom: "1.25rem"
+            }}
+          >
+            {barbersList.map(b => {
+              const active = selectedBarber?.name === b.name;
+              return (
+                <button
+                  key={b.name}
+                  onClick={() => {
+                    setSelectedBarber(b);
+                    setStep(3);
+                  }}
+                  style={{
+                    background: active ? "linear-gradient(120deg,#1e3a8a,#2563eb)" : "#fff",
+                    color: active ? "#fff" : "var(--color-text)",
+                    border: active
+                      ? "1px solid #2563eb"
+                      : "1px solid var(--color-border)",
+                    borderRadius: "16px",
+                    padding: "1rem .9rem",
+                    minHeight: 170,
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: ".7rem",
+                    alignItems: "center",
+                    cursor: "pointer",
+                    boxShadow: active
+                      ? "0 8px 24px -6px rgba(37,99,235,0.35)"
+                      : "var(--shadow-sm)",
+                    transition: "var(--transition)"
+                  }}
+                >
+                  <img
+                    src={b.img}
+                    alt={b.name}
+                    style={{
+                      width: 70,
+                      height: 70,
+                      borderRadius: "50%",
+                      objectFit: "cover",
+                      border: "3px solid #fff",
+                      boxShadow: "0 4px 10px -2px rgba(0,0,0,.25)"
+                    }}
+                  />
+                  <span
+                    style={{
+                      fontWeight: 600,
+                      letterSpacing: ".4px",
+                      fontSize: ".95rem"
+                    }}
+                  >
+                    {b.name}
+                  </span>
+                  <span
+                    style={{
+                      fontSize: ".65rem",
+                      letterSpacing: ".7px",
+                      fontWeight: 600,
+                      opacity: 0.75,
+                      textTransform: "uppercase"
+                    }}
+                  >
+                    Mon-Sat
+                  </span>
+                </button>
+              );
+            })}
           </div>
-          <button className="barber-btn" style={{ width:"100%" }} onClick={()=>setStep(1)}>Back</button>
+          <div style={{ display: "flex", gap: ".75rem", justifyContent: "flex-end" }}>
+            <button
+              className="btn btn-secondary"
+              onClick={() => setStep(1)}
+            >
+              Back
+            </button>
+          </div>
         </div>
       </div>
     );
   }
 
-  // Step 3
+  // --- STEP 3: Date + Time ---
   if (step === 3) {
     const total = sumDurations(selectedServices);
     const days = getNext7Days();
-    const available = date && selectedBarber
-      ? getAvailableSlots({
-          workingHours: selectedBarber.workingHours,
-          appointments: selectedBarber.appointments,
-          totalDuration: total,
-          dateStr: date,
-          slotInterval: 30
-        }) : [];
+    const slots =
+      date && selectedBarber
+        ? getAvailableSlots({
+            workingHours: selectedBarber.workingHours,
+            appointments: selectedBarber.appointments,
+            totalDuration: total,
+            dateStr: date
+          })
+        : [];
+
     return (
-      <div style={layout}>
-        <div className="barber-header">
-          <span className="barber-pole" style={{ backgroundImage:`url(${barberPole})` }} />
-          Atlanta Barber Shop
+      <div className="app-shell fade-in">
+        <div className="hero-section">
+          <h1 className="h1-brand">Pick Date & Time</h1>
+          <div className="subtext">Step 3</div>
         </div>
-        <div className="barber-card" style={{ maxWidth:600 }}>
-          <h2 style={title}>Pick Date & Time</h2>
-          <div style={{ display:"flex", gap:10, flexWrap:"wrap", justifyContent:"center", marginBottom:18 }}>
-            {days.map(d=>(
+        <div className="services-panel" style={{ maxWidth: 880 }}>
+          <div
+            style={{
+              display: "flex",
+              flexWrap: "wrap",
+              gap: ".6rem",
+              marginBottom: "1.1rem"
+            }}
+          >
+            {days.map(d => (
               <button
                 key={d.dateStr}
-                onClick={()=>{ setDate(d.dateStr); setSlot(""); }}
-                className="barber-btn"
-                style={{
-                  background: date===d.dateStr ? "#b93434":"#fff",
-                  color: date===d.dateStr ? "#fff":"#b93434",
-                  border:"1.5px solid #b93434",
-                  fontWeight:600,
-                  fontSize:15,
-                  padding:"0.55em 0.9em"
+                onClick={() => {
+                  setDate(d.dateStr);
+                  setSlot("");
                 }}
-              >{d.label}</button>
+                className="btn btn-secondary"
+                style={{
+                  minWidth: 120,
+                  background:
+                    date === d.dateStr
+                      ? "linear-gradient(90deg,#1e3a8a,#2563eb)"
+                      : "#fff",
+                  color: date === d.dateStr ? "#fff" : "var(--color-primary)",
+                  borderColor:
+                    date === d.dateStr
+                      ? "transparent"
+                      : "var(--color-border)"
+                }}
+              >
+                {d.label}
+              </button>
             ))}
           </div>
-          {date && (
-            <>
-              <div style={{ color:"#b93434", fontWeight:600, textAlign:"center", marginBottom:8 }}>Available Slots:</div>
-              <div style={{ display:"flex", flexWrap:"wrap", gap:10, justifyContent:"center", marginBottom:18 }}>
-                {available.length===0 && <span style={{ color:"#888" }}>No slots</span>}
-                {available.map(t=>(
-                  <button
-                    key={t}
-                    onClick={()=>setSlot(t)}
-                    className="barber-btn"
-                    style={{
-                      background: slot===t ? "#f6c453":"#fff",
-                      color:"#b93434",
-                      border:"1.5px solid #b93434",
-                      fontWeight:600,
-                      fontSize:14,
-                      padding:"0.45em 0.9em"
-                    }}
-                  >{t} - {addMinutes(t, total)}</button>
-                ))}
-              </div>
-            </>
-          )}
-          <div style={{ display:"flex", gap:8 }}>
-            <button className="barber-btn" style={{ flex:1 }} onClick={()=>setStep(2)}>Back</button>
+
+            {date && (
+              <>
+                <div
+                  style={{
+                    fontSize: ".75rem",
+                    fontWeight: 600,
+                    letterSpacing: ".7px",
+                    color: "var(--color-text-light)",
+                    textTransform: "uppercase",
+                    marginBottom: ".5rem"
+                  }}
+                >
+                  Available Slots
+                </div>
+                <div
+                  style={{
+                    display: "flex",
+                    flexWrap: "wrap",
+                    gap: ".55rem",
+                    marginBottom: "1.2rem"
+                  }}
+                >
+                  {slots.length === 0 && (
+                    <span style={{ fontSize: ".85rem", color: "#9ca3af" }}>
+                      No slots for this day
+                    </span>
+                  )}
+                  {slots.map(t => (
+                    <button
+                      key={t}
+                      onClick={() => setSlot(t)}
+                      className="btn btn-secondary"
+                      style={{
+                        background:
+                          slot === t
+                            ? "linear-gradient(90deg,#1e3a8a,#2563eb)"
+                            : "#fff",
+                        color: slot === t ? "#fff" : "var(--color-primary)",
+                        padding: ".55rem .85rem",
+                        minWidth: "unset"
+                      }}
+                    >
+                      {t} – {addMinutes(t, total)}
+                    </button>
+                  ))}
+                </div>
+              </>
+            )}
+
+          <div style={{ display: "flex", gap: ".75rem", justifyContent: "flex-end" }}>
             <button
-              className="barber-btn"
-              style={{ flex:1, background: !date||!slot ? "#b9343488":"" }}
+              className="btn btn-secondary"
+              onClick={() => setStep(2)}
+            >
+              Back
+            </button>
+            <button
+              className="btn"
               disabled={!date || !slot}
-              onClick={()=>setStep(4)}
-            >Next</button>
+              onClick={() => setStep(4)}
+            >
+              Next
+            </button>
           </div>
         </div>
       </div>
     );
   }
 
-  // Step 4
+  // --- STEP 4: Customer Info ---
   if (step === 4) {
     return (
-      <div style={layout}>
-        <div className="barber-header">
-          <span className="barber-pole" style={{ backgroundImage:`url(${barberPole})` }} />
-          Atlanta Barber Shop
+      <div className="app-shell fade-in">
+        <div className="hero-section">
+          <h1 className="h1-brand">Your Information</h1>
+          <div className="subtext">Step 4</div>
         </div>
-        <div className="barber-card" style={{ maxWidth:600 }}>
-          <h2 style={title}>Your Information</h2>
-          <input placeholder="Full Name" value={customer.name} onChange={e=>setCustomer(c=>({...c,name:e.target.value}))} />
-          <input placeholder="Phone" value={customer.phone} onChange={e=>setCustomer(c=>({...c,phone:e.target.value}))} />
-          <input placeholder="Email (optional)" value={customer.email} onChange={e=>setCustomer(c=>({...c,email:e.target.value}))} />
-          <div style={{ display:"flex", gap:8 }}>
-            <button className="barber-btn" style={{ flex:1 }} onClick={()=>setStep(3)}>Back</button>
+        <div className="services-panel" style={{ maxWidth: 640 }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: ".9rem" }}>
+            {["Full Name", "Phone", "Email (optional)"].map(label => {
+              const key =
+                label === "Full Name"
+                  ? "name"
+                  : label.startsWith("Phone")
+                  ? "phone"
+                  : "email";
+              return (
+                <div key={label} style={{ display: "flex", flexDirection: "column", gap: ".35rem" }}>
+                  <label
+                    style={{
+                      fontSize: ".75rem",
+                      fontWeight: 600,
+                      letterSpacing: ".6px",
+                      textTransform: "uppercase",
+                      color: "var(--color-text-light)"
+                    }}
+                  >
+                    {label}
+                  </label>
+                  <input
+                    style={{
+                      padding: ".75rem .9rem",
+                      borderRadius: "12px",
+                      border: "1px solid var(--color-border)",
+                      fontSize: ".95rem",
+                      background: "#fff",
+                      outline: "none",
+                      transition: "var(--transition)"
+                    }}
+                    placeholder={label}
+                    value={customer[key]}
+                    onChange={e =>
+                      setCustomer(c => ({ ...c, [key]: e.target.value }))
+                    }
+                    type="text"
+                  />
+                </div>
+              );
+            })}
+          </div>
+          <div style={{ display: "flex", gap: ".75rem", justifyContent: "flex-end", marginTop: "1.2rem" }}>
             <button
-              className="barber-btn"
-              style={{ flex:1, background: !customer.name||!customer.phone ? "#b9343488":"" }}
+              className="btn btn-secondary"
+              onClick={() => setStep(3)}
+            >
+              Back
+            </button>
+            <button
+              className="btn"
               disabled={!customer.name || !customer.phone}
-              onClick={()=>setStep(5)}
-            >Confirm</button>
+              onClick={() => setStep(5)}
+            >
+              Confirm
+            </button>
           </div>
         </div>
       </div>
     );
   }
 
-  // Step 5 (Success)
+  // --- STEP 5: Success ---
   return (
-    <div style={layout}>
-      <div className="barber-header">
-        <span className="barber-pole" style={{ backgroundImage:`url(${barberPole})` }} />
-        Atlanta Barber Shop
+    <div className="app-shell fade-in">
+      <div className="hero-section">
+        <h1 className="h1-brand">Appointment Confirmed</h1>
+        <div className="subtext">Thank you!</div>
       </div>
-      <div className="barber-card" style={{ maxWidth:600, textAlign:"center" }}>
-        <h2 style={{ color:"#b93434", marginBottom:18 }}>Appointment Confirmed!</h2>
-        <p style={{ color:"#1a2233", fontSize:"1.08em" }}>
-          Thank you <b>{customer.name}</b>! Your appointment is booked.
-        </p>
-        <div style={{ textAlign:"left", margin:"1.2em 0", color:"#b93434", lineHeight:1.4 }}>
-          <b>Services:</b> {selectedServices.join(", ")}<br />
-          <b>Barber:</b> {selectedBarber?.name}<br />
-            <b>Date:</b> {date} <br />
-          <b>Time:</b> {slot}<br />
-          <b>Phone:</b> {customer.phone}
+      <div className="services-panel" style={{ maxWidth: 640 }}>
+        <div style={{ lineHeight: 1.5, marginBottom: "1.2rem" }}>
+          <strong style={{ fontSize: "1rem" }}>Thank you, {customer.name}.</strong>
+          <div style={{ fontSize: ".92rem", color: "var(--color-text-light)", marginTop: ".35rem" }}>
+            Your booking is confirmed. A reminder can be added later via SMS/email system.
+          </div>
         </div>
-        <button
-          className="barber-btn"
-          style={{ width:"100%" }}
-          onClick={()=>{
-            setStep(1);
-            setSelectedServices([]);
-            setSelectedBarber(null);
-            setDate("");
-            setSlot("");
-            setCustomer({ name:"", phone:"", email:"" });
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit,minmax(170px,1fr))",
+            gap: ".75rem",
+            marginBottom: "1.2rem"
           }}
-        >Book Another</button>
+        >
+          <DetailCard label="Services" value={servicesList.filter(s => selectedServices.includes(s.key)).map(s => s.name).join(", ")} />
+          <DetailCard label="Barber" value={selectedBarber?.name || "-"} />
+          <DetailCard label="Date" value={date || "-"} />
+            <DetailCard label="Time" value={slot || "-"} />
+          <DetailCard label="Phone" value={customer.phone || "-"} />
+          <DetailCard label="Email" value={customer.email || "—"} />
+        </div>
+        <div style={{ display: "flex", gap: ".75rem", justifyContent: "flex-end" }}>
+          <button
+            className="btn"
+            onClick={() => {
+              setStep(1);
+              setSelectedServices([]);
+              setSelectedBarber(null);
+              setDate("");
+              setSlot("");
+              setCustomer({ name: "", phone: "", email: "" });
+            }}
+          >
+            Book Another
+          </button>
+        </div>
       </div>
     </div>
   );
 }
 
-const layout = { minHeight:"100vh", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", padding:"2rem 1rem" };
-const title = { textAlign:"center", color:"#b93434", marginBottom:"1.2rem" };
+// Small reusable detail card
+function DetailCard({ label, value }) {
+  return (
+    <div
+      style={{
+        background: "linear-gradient(180deg,var(--color-surface-alt),#ffffff)",
+        border: "1px solid var(--color-border)",
+        borderRadius: "14px",
+        padding: ".85rem .9rem",
+        minHeight: 90,
+        display: "flex",
+        flexDirection: "column",
+        gap: ".4rem",
+        boxShadow: "var(--shadow-sm)"
+      }}
+    >
+      <span
+        style={{
+          fontSize: ".65rem",
+          fontWeight: 600,
+          letterSpacing: ".6px",
+          textTransform: "uppercase",
+          color: "var(--color-text-light)"
+        }}
+      >
+        {label}
+      </span>
+      <span
+        style={{
+          fontSize: ".85rem",
+          fontWeight: 600,
+          color: "var(--color-primary)",
+          lineHeight: 1.25
+        }}
+      >
+        {value || "—"}
+      </span>
+    </div>
+  );
+}
