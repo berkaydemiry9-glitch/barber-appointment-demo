@@ -1,5 +1,5 @@
 /* ===================================================================
-   BARBER BOOKING THEME - Warm Brick / Tungsten Palette (v3 Darker)
+   BARBER BOOKING THEME - Warm Brick / Tungsten Palette (v3.1 Darker + Header Fix)
    =================================================================== */
 
 :root {
@@ -21,7 +21,7 @@
   --color-border-soft: #32231d;
   --color-danger: #d4544c;
 
-  /* Daha karanlık overlay (önceki sürümden opaklık artırıldı) */
+  /* Dark overlay (kept dark) */
   --color-overlay-grad1: rgba(12,9,8,0.80);
   --color-overlay-grad2: rgba(12,9,8,0.88);
   --color-overlay-grad3: rgba(8,6,5,0.94);
@@ -29,7 +29,7 @@
   --radius-xs: 6px;
   --radius-sm: 10px;
   --radius-md: 14px;
-  --radius-lg: 18px;
+  --radius-lg: 20px;
 
   --shadow-xs: 0 1px 2px rgba(0,0,0,.55);
   --shadow-sm: 0 4px 10px -2px rgba(0,0,0,.6);
@@ -41,9 +41,17 @@
   --font-stack: 'Inter','SF Pro Text',system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen,Ubuntu,Cantarell,"Helvetica Neue",Arial,sans-serif;
 
   --bg-image: url("https://images.unsplash.com/photo-1585747860715-2ba37e788b70?q=80&w=1748&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D");
+
+  /* Header tweak variables */
+  --hero-backdrop-dark: rgba(10,8,7,0.72);
+  --hero-backdrop-edge: rgba(10,8,7,0.05);
+  --title-glow-core: rgba(255,230,200,0.45);
+  --title-glow-wide: rgba(210,150,80,0.35);
+  --title-outline: rgba(0,0,0,0.55);
+  --title-outline-strong: rgba(0,0,0,0.85);
 }
 
-/* ====================== GLOBAL / STACKING & SCROLL LOCK ============ */
+/* ============== GLOBAL / STACKING & SCROLL LOCK =================== */
 html, body, #root {
   height: 100%;
   margin: 0;
@@ -51,16 +59,12 @@ html, body, #root {
   color: var(--color-text);
   -webkit-font-smoothing: antialiased;
   background: transparent;
-  overflow: hidden;                 /* Scroll tamamen kapandı */
+  overflow: hidden;
   scrollbar-width: none;
 }
 
 html::-webkit-scrollbar,
-body::-webkit-scrollbar {
-  width: 0;
-  height: 0;
-  display: none;
-}
+body::-webkit-scrollbar { width: 0; height: 0; display: none; }
 
 body {
   background: var(--color-bg-deep);
@@ -69,8 +73,7 @@ body {
   overscroll-behavior: none;
 }
 
-/* FOTOĞRAF + Karanlık overlay (fotoğraf üstte, gradient altta değil;
-   daha koyu bir maske için iki pseudo kullandık) */
+/* Background & overlays */
 body::before {
   content: "";
   position: fixed;
@@ -81,24 +84,26 @@ body::before {
       var(--color-overlay-grad1) 0%,
       var(--color-overlay-grad2) 45%,
       var(--color-overlay-grad3) 100%);
-  /* Fotoğrafı biraz daha kararttık */
-  filter: blur(2.8px) saturate(1.08) brightness(0.78);
+  filter: blur(2.8px) saturate(1.05) brightness(0.78);
   z-index: 0;
   pointer-events: none;
 }
 
-/* Vignette + hafif merkez spotlight & sıcak ışık miks */
+/* Reduced central glare to save header contrast */
 body::after {
   content: "";
   position: fixed;
   inset: 0;
   background:
-    radial-gradient(circle at 50% 40%, rgba(255,200,120,0.10), rgba(0,0,0,0) 45%),
-    radial-gradient(ellipse at 50% 50%, rgba(0,0,0,0) 40%, rgba(0,0,0,0.55) 85%, rgba(0,0,0,0.75) 100%),
-    radial-gradient(circle at 16% 18%, rgba(255,204,140,0.18), transparent 60%),
-    radial-gradient(circle at 85% 22%, rgba(255,204,140,0.16), transparent 65%);
-  mix-blend-mode: normal; /* Screen yerine normal; karanlık hissi koru */
-  opacity: .85;
+    /* Daha küçük ve daha düşük opaklık spotlight */
+    radial-gradient(circle at 50% 38%, rgba(255,200,120,0.06), rgba(0,0,0,0) 38%),
+    /* Vignette */
+    radial-gradient(ellipse at 50% 52%, rgba(0,0,0,0) 40%, rgba(0,0,0,0.55) 80%, rgba(0,0,0,0.78) 100%),
+    /* Yan hafif sıcaklıklar (düşük opaklık) */
+    radial-gradient(circle at 16% 18%, rgba(255,204,140,0.10), transparent 55%),
+    radial-gradient(circle at 85% 22%, rgba(255,204,140,0.08), transparent 60%);
+  mix-blend-mode: normal;
+  opacity: .78;
   z-index: 1;
   pointer-events: none;
 }
@@ -111,56 +116,92 @@ body::after {
   z-index: 5;
 }
 
-/* ====================== TYPOGRAPHY & UTILS ======================== */
-h1,h2,h3,h4 {
-  margin: 0;
-  font-weight: 600;
-  letter-spacing: .5px;
-}
+/* ====================== TYPOGRAPHY & HERO ========================= */
+h1,h2,h3,h4 { margin: 0; font-weight: 600; letter-spacing: .5px; }
 
 a { color: var(--color-primary-amber-bright); text-decoration: none; }
+
 .fade-in { animation: fadeIn .55s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(6px);} to { opacity: 1; transform: translateY(0);} }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(6px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* ====================== LAYOUT ==================================== */
 .app-shell {
   width: 100%;
-  min-height: 100dvh; /* Daha güvenli viewport */
+  min-height: 100dvh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
-  padding: clamp(1.1rem, 3vw, 2rem) 1.1rem 2rem;
+  padding: clamp(1.05rem, 3vw, 2rem) 1.05rem 2rem;
   gap: 1.2rem;
 }
 
 .hero-section {
   text-align: center;
-  max-width: 880px;
-  padding: .3rem 1rem .4rem;
+  max-width: 980px;
+  padding: .55rem 1.2rem .6rem;
+  position: relative;
 }
 
+/* Local dark halo behind header to restore contrast */
+.hero-section::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 52%;
+  transform: translate(-50%, -50%);
+  width: min(100%, 920px);
+  height: 145px;
+  background:
+    radial-gradient(ellipse at 50% 50%, var(--hero-backdrop-dark) 0%, rgba(15,12,10,0.62) 42%, rgba(20,16,14,0.45) 65%, var(--hero-backdrop-edge) 100%);
+  filter: blur(22px);
+  z-index: -1;
+  border-radius: 160px;
+  pointer-events: none;
+}
+
+/* Title styling: multi-layer glow + subtle outline for readability */
 .h1-brand {
-  font-size: clamp(1.7rem, 3.2vw, 2.15rem);
-  background: linear-gradient(90deg,#f4e6d6 0%,#dec2a5 40%,#b79578 75%,#8a6544 100%);
+  font-size: clamp(1.85rem, 3.4vw, 2.45rem);
+  line-height: 1.08;
+  background: linear-gradient(90deg,
+    #fff3e5 0%,
+    #f3dcc2 20%,
+    #e2c3a1 45%,
+    #c79a6b 70%,
+    #a77145 90%);
   -webkit-background-clip: text;
   color: transparent;
   font-weight: 700;
-  letter-spacing: .8px;
-  margin-bottom: .5rem;
-  text-shadow: 0 2px 12px rgba(0,0,0,.6);
+  letter-spacing: .78px;
+  margin-bottom: .55rem;
+  text-shadow:
+    0 1px 1px var(--title-outline),
+    0 2px 4px var(--title-outline-strong),
+    0 0 6px var(--title-glow-core),
+    0 0 18px var(--title-glow-wide);
+  filter:
+    drop-shadow(0 1px 2px rgba(0,0,0,0.65))
+    drop-shadow(0 4px 12px rgba(0,0,0,0.55));
 }
 
+/* Optional higher-contrast variant (add class if needed)
+.h1-brand--hc {
+  background: linear-gradient(90deg,#ffffff 0%,#f5e3d0 40%,#e4c19b 70%,#c18653 100%);
+  text-shadow:
+    0 0 2px rgba(0,0,0,.85),
+    0 2px 4px rgba(0,0,0,.75),
+    0 0 8px rgba(255,230,200,.5);
+}
+*/
+
 .subtext {
-  font-size: .88rem;
+  font-size: .92rem;
   color: var(--color-text-light);
-  letter-spacing: .42px;
+  letter-spacing: .46px;
   font-weight: 500;
-  text-shadow: 0 1px 2px rgba(0,0,0,.65);
+  text-shadow:
+    0 1px 2px rgba(0,0,0,.75),
+    0 0 6px rgba(0,0,0,.55);
 }
 
 /* ====================== STEP INDICATOR ============================ */
@@ -168,7 +209,7 @@ a { color: var(--color-primary-amber-bright); text-decoration: none; }
   display: flex;
   justify-content: center;
   gap: .75rem;
-  margin: .15rem 0 .8rem;
+  margin: .2rem 0 .75rem;
   flex-wrap: wrap;
 }
 
@@ -210,7 +251,7 @@ a { color: var(--color-primary-amber-bright); text-decoration: none; }
   background:
     linear-gradient(155deg, rgba(38,26,21,.78), rgba(30,21,17,.82) 55%, rgba(26,18,15,.87) 100%);
   border: 1px solid rgba(255,255,255,.04);
-  border-radius: 20px;
+  border-radius: var(--radius-lg);
   padding: 1.1rem 1.15rem 1.35rem;
   box-shadow: 0 20px 60px -25px rgba(0,0,0,.85), 0 4px 18px -6px rgba(0,0,0,.7);
   backdrop-filter: blur(22px) saturate(1.15);
@@ -545,12 +586,12 @@ input:focus {
 
 /* ====================== OPTIONAL TWEAKS =========================== */
 /*
-Arka planı biraz daha açmak istersen:
-body::before { filter: blur(2.8px) saturate(1.05) brightness(0.85); }
+Daha fazla parlak başlık:
+.h1-brand { --title-glow-core: rgba(255,240,210,.65); --title-glow-wide: rgba(255,200,140,.55); }
 
-Vignette’i azalt:
-body::after { opacity:.65; }
+Arka planı biraz aç:
+body::before { filter: blur(2.8px) saturate(1.05) brightness(0.82); }
 
-Scroll tekrar açılsın istersen:
-html, body { overflow:auto; }
+Vignette azalt:
+body::after { opacity:.6; }
 */
