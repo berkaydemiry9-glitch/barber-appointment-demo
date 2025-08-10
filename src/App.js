@@ -1,6 +1,12 @@
+import barberPole from "./barber-pole.svg";
+
+// ...
+<div className="barber-header">
+  <span className="barber-pole" style={{ backgroundImage: `url(${barberPole})` }} />
+  Atlanta Barber Shop
+</div>
 import React, { useState } from "react";
 import "./barber-theme.css";
-import barberPole from "./barber-pole.svg"; // import the SVG so webpack resolves it
 
 // Services (Atlanta)
 const servicesList = [
