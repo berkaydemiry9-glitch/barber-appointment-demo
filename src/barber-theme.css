@@ -1,6 +1,6 @@
 /* ===================================================================
    BARBER BOOKING THEME - Warm Brick / Tungsten Palette
-   (Full file with stacking fix & background image support)
+   (Full file with stacking fix & improved background photo visibility)
    =================================================================== */
 
 /* ------------ Root Variables (adjust colors / image here) ---------- */
@@ -23,9 +23,10 @@
   --color-border-soft: #3a2923;
   --color-danger: #dd5c52;
 
-  --color-overlay-grad1: rgba(20,14,12,0.82);
-  --color-overlay-grad2: rgba(20,14,12,0.92);
-  --color-overlay-grad3: rgba(14,10,8,0.96);
+  /* Overlay opacities (LIGHTENED so photo is more visible) */
+  --color-overlay-grad1: rgba(20,14,12,0.55);
+  --color-overlay-grad2: rgba(20,14,12,0.68);
+  --color-overlay-grad3: rgba(14,10,8,0.82);
 
   --radius-xs: 6px;
   --radius-sm: 10px;
@@ -64,23 +65,24 @@ body {
   overflow-x: hidden;
 }
 
-/* Background photo + dark overlays */
+/* Background photo + (lighter) dark overlays
+   NOTE: photo layer FIRST so gradient sits BEHIND (photo more visible) */
 body::before {
   content: "";
   position: fixed;
   inset: 0;
   background:
+    var(--bg-image) center center / cover no-repeat,
     linear-gradient(180deg,
       var(--color-overlay-grad1) 0%,
       var(--color-overlay-grad2) 45%,
-      var(--color-overlay-grad3) 100%),
-    var(--bg-image) center center / cover no-repeat;
-  filter: blur(4px) saturate(1.05) brightness(.92);
+      var(--color-overlay-grad3) 100%);
+  filter: blur(3px) saturate(1.12) brightness(1.02);
   z-index: 0;
   pointer-events: none;
 }
 
-/* Light glow / warmth overlays */
+/* Light glow / warmth overlays (reduced opacity) */
 body::after {
   content: "";
   position: fixed;
@@ -90,7 +92,7 @@ body::after {
     radial-gradient(circle at 78% 65%, rgba(217,149,48,.15), transparent 60%),
     radial-gradient(circle at 15% 70%, rgba(155,81,16,.18), transparent 65%);
   mix-blend-mode: screen;
-  opacity: .45;
+  opacity: .30;
   z-index: 1;
   pointer-events: none;
 }
@@ -212,7 +214,7 @@ a { color: var(--color-primary-amber-bright); text-decoration: none; }
   width: 100%;
   max-width: 1060px;
   background:
-    linear-gradient(160deg, rgba(40,27,22,.78), rgba(34,23,19,.83) 60%, rgba(30,20,17,.86) 100%);
+    linear-gradient(160deg, rgba(40,27,22,.74), rgba(34,23,19,.80) 60%, rgba(30,20,17,.84) 100%);
   border: 1px solid rgba(255,255,255,.05);
   border-radius: var(--radius-lg);
   padding: 1.15rem 1.2rem 1.45rem;
@@ -245,8 +247,8 @@ a { color: var(--color-primary-amber-bright); text-decoration: none; }
 .service-card {
   position: relative;
   background:
-    linear-gradient(155deg, rgba(55,37,30,.65), rgba(43,28,23,.8)),
-    linear-gradient(180deg,#2f201a,#241813);
+    linear-gradient(155deg, rgba(55,37,30,.60), rgba(43,28,23,.75)),
+    linear-gradient(180deg,#2f201acc,#241813cc);
   border: 1px solid rgba(255,255,255,.05);
   border-radius: 16px;
   padding: .85rem .7rem .75rem;
