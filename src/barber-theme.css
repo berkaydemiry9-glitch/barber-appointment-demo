@@ -1,6 +1,6 @@
 /* ===================================================================
    BARBER BOOKING THEME - Warm Brick / Tungsten Palette
-   v3.4 - Vivid Title + Compact Plate
+   v3.5 - High Contrast Vivid Title
    =================================================================== */
 
 :root {
@@ -42,39 +42,28 @@
 
   --bg-image: url("https://images.unsplash.com/photo-1585747860715-2ba37e788b70?q=80&w=1748&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D");
 
-  /* === Vivid Title Palette === */
-  --title-vivid-1: #ffffff;
-  --title-vivid-2: #fff1e2;
-  --title-vivid-3: #f8d4ac;
-  --title-vivid-4: #e9b573;
-  --title-vivid-5: #d7953e;
-  /* Daha agresif altın istersek 5'i #e9a64d yapabilirsin */
+  /* Title vivid gradient stops (beyaz -> sıcak altın) */
+  --title-stop-1: #ffffff;
+  --title-stop-2: #fff4e8;
+  --title-stop-3: #f9d9b5;
+  --title-stop-4: #edbf85;
+  --title-stop-5: #d99a4e;
 
-  --title-gradient-vivid: linear-gradient(
-    95deg,
-    var(--title-vivid-1) 0%,
-    var(--title-vivid-2) 25%,
-    var(--title-vivid-3) 52%,
-    var(--title-vivid-4) 77%,
-    var(--title-vivid-5) 100%
-  );
+  --title-gradient: linear-gradient(100deg,
+      var(--title-stop-1) 0%,
+      var(--title-stop-2) 24%,
+      var(--title-stop-3) 52%,
+      var(--title-stop-4) 74%,
+      var(--title-stop-5) 100%);
 
-  /* Glow & stroke yoğunlukları (kolay ayar) */
-  --title-stroke-color: rgba(0,0,0,.55);
-  --title-stroke-strong: rgba(0,0,0,.78);
-  --title-glow-core-color: rgba(255,220,160,.55);
-  --title-glow-wide-color: rgba(210,150,80,.40);
-  --title-glow-core-opacity: 1;  /* 0.8 – 1.2 arasında ayarla */
-  --title-glow-wide-opacity: 1;
+  /* Glow intensities (0.0 - 1.5) */
+  --title-core-glow-alpha: .55;
+  --title-wide-glow-alpha: .35;
 
-  /* Header plate ayarları */
-  --hero-title-plate-bg: 18,14,12;
-  --hero-title-plate-alpha-scale: 0.92; /* 0.7 daha şeffaf, 1 daha koyu */
-  --hero-title-plate-border: rgba(255,255,255,.09);
-  --hero-title-plate-blur: 14px;
+  /* Shield plate intensity (0.6 - 1.1) */
+  --hero-title-plate-strength: 0.95;
 
-  /* Subtext parlaklık */
-  --subtext-color: #e6dbd4;
+  --subtext-color: #e7dbd4;
 }
 
 /* ================= GLOBAL / SCROLL LOCK ================= */
@@ -114,11 +103,12 @@ body::before {
 body::after {
   content:"";
   position:fixed; inset:0;
+  /* Flare daha az (ilk radial opaklık ~0.02) */
   background:
-    radial-gradient(circle at 50% 38%, rgba(255,200,120,0.035), rgba(0,0,0,0) 32%),
+    radial-gradient(circle at 50% 38%, rgba(255,220,150,0.02), rgba(0,0,0,0) 30%),
     radial-gradient(ellipse at 50% 52%, rgba(0,0,0,0) 42%, rgba(0,0,0,0.55) 80%, rgba(0,0,0,0.78) 100%),
-    radial-gradient(circle at 16% 18%, rgba(255,204,140,0.075), transparent 56%),
-    radial-gradient(circle at 85% 22%, rgba(255,204,140,0.06), transparent 63%);
+    radial-gradient(circle at 16% 18%, rgba(255,204,140,0.07), transparent 56%),
+    radial-gradient(circle at 85% 22%, rgba(255,204,140,0.055), transparent 63%);
   opacity:.72;
   z-index:1;
   pointer-events:none;
@@ -147,127 +137,125 @@ a { color: var(--color-primary-amber-bright); text-decoration:none; }
 .hero-section {
   text-align:center;
   max-width:1100px;
-  padding:.85rem 1.4rem .85rem;
+  padding:.85rem 1.4rem .75rem;
   position:relative;
 }
 
-/* Geniş, yumuşak halo (arka) */
+/* Geniş halo (arka) - daha hafif */
 .hero-section::before {
   content:"";
   position:absolute;
-  left:50%; top:56%;
+  left:50%; top:54%;
   transform:translate(-50%,-50%);
   width:min(100%,1000px);
-  height:160px;
+  height:150px;
   background:
-    radial-gradient(ellipse at 50% 50%, rgba(22,17,15,0.58) 0%, rgba(18,14,12,0.46) 40%, rgba(18,14,12,0.22) 68%, rgba(18,14,12,0) 100%);
+    radial-gradient(ellipse at 50% 50%, rgba(18,14,12,0.55) 0%, rgba(18,14,12,0.32) 55%, rgba(18,14,12,0) 85%);
   filter: blur(26px);
   z-index:-3;
   pointer-events:none;
   border-radius:200px;
 }
 
-/* Kompakt plate – sadece başlık & subtext arkasında */
+/* Kompakt shield plate - sadece başlık/subtext kontrastı */
 .hero-section::after {
   content:"";
   position:absolute;
-  left:50%;
-  top:8px;
-  transform:translateX(-50%);
-  width: clamp(360px, 62%, 860px);
+  left:50%; top:50%;
+  transform:translate(-50%,-50%);
+  width: clamp(340px, 62%, 860px);
   height: 118px;
   background:
-    linear-gradient(165deg,
-      rgba(var(--hero-title-plate-bg), calc(.82 * var(--hero-title-plate-alpha-scale))) 0%,
-      rgba(var(--hero-title-plate-bg), calc(.70 * var(--hero-title-plate-alpha-scale))) 55%,
-      rgba(var(--hero-title-plate-bg), calc(.52 * var(--hero-title-plate-alpha-scale))) 100%);
-  backdrop-filter: blur(var(--hero-title-plate-blur)) saturate(1.25);
-  -webkit-backdrop-filter: blur(var(--hero-title-plate-blur)) saturate(1.25);
-  border:1px solid var(--hero-title-plate-border);
+    radial-gradient(ellipse at 50% 48%,
+      rgba(12,9,8, calc(.86 * var(--hero-title-plate-strength))) 0%,
+      rgba(12,9,8, calc(.78 * var(--hero-title-plate-strength))) 46%,
+      rgba(12,9,8, calc(.60 * var(--hero-title-plate-strength))) 65%,
+      rgba(12,9,8,0) 88%);
+  backdrop-filter: blur(8px) saturate(1.15);
+  -webkit-backdrop-filter: blur(8px) saturate(1.15);
+  border-radius: 72px;
   box-shadow:
-    0 10px 34px -14px rgba(0,0,0,.65),
-    0 4px 14px -6px rgba(0,0,0,.55),
-    0 0 0 1px rgba(255,255,255,.03),
-    inset 0 1px 0 rgba(255,255,255,.07),
-    inset 0 -4px 12px -6px rgba(0,0,0,.5);
-  border-radius: 38px;
+    0 8px 26px -14px rgba(0,0,0,.65),
+    0 2px 10px -4px rgba(0,0,0,.55),
+    inset 0 0 0 1px rgba(255,255,255,.04);
   z-index:-2;
   pointer-events:none;
-  /* Kenarlarda hafif kararma için mask */
-  mask: radial-gradient(circle at 50% 50%, rgba(0,0,0,1) 75%, rgba(0,0,0,0) 100%);
+  /* Kenarlarda yumuşak silinme */
+  mask: radial-gradient(circle at 50% 55%, #000 78%, rgba(0,0,0,0) 100%);
 }
 
-/* Vivid Title */
+/* Vivid Title (yüksek kontrast, degrade + glow) */
 .h1-brand {
-  font-size: clamp(2.15rem, 4.0vw, 2.85rem);
+  font-size: clamp(2.1rem, 4vw, 2.85rem);
   line-height:1.05;
-  background: var(--title-gradient-vivid);
-  -webkit-background-clip: text;
-  color: transparent;
   font-weight:700;
-  letter-spacing:.85px;
-  margin-bottom:.55rem;
+  letter-spacing:.9px;
+  margin:0 0 .55rem;
   position:relative;
 
-  /* İnce stroke */
-  -webkit-text-stroke: 1px var(--title-stroke-color);
+  background: var(--title-gradient);
+  background-clip: text;
+  -webkit-background-clip: text;
+  /* Gradient görünmezse fallback için beyaz renk kalır */
+  color:#ffffff;
+  -webkit-text-fill-color: transparent;
 
-  /* Çok katmanlı shadow (koyu kontur + altın halo) */
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+
+  /* Çok katmanlı gölge: net kontur + altın halo */
   text-shadow:
-    0 0 1px var(--title-stroke-strong),
-    0 2px 3px var(--title-stroke-strong),
+    0 1px 0 rgba(0,0,0,.55),
+    0 2px 3px rgba(0,0,0,.55),
     0 4px 8px rgba(0,0,0,.55),
-    0 0 6px rgba(255,225,180, calc(.55 * var(--title-glow-core-opacity))),
-    0 0 18px rgba(245,190,120, calc(.40 * var(--title-glow-wide-opacity))),
-    0 0 34px rgba(240,170,90, calc(.30 * var(--title-glow-wide-opacity)));
+    0 0 6px rgba(255,230,190, calc(.50 * var(--title-core-glow-alpha))),
+    0 0 16px rgba(244,200,135, calc(.40 * var(--title-core-glow-alpha))),
+    0 0 32px rgba(230,170,95,  calc(.35 * var(--title-wide-glow-alpha)));
 
-  filter:
-    drop-shadow(0 3px 6px rgba(0,0,0,.55));
-  animation: titlePop .5s ease;
+  filter: drop-shadow(0 3px 5px rgba(0,0,0,.55));
 }
 
-/* Opsiyonel parlak kayma efekti */
+/* Ek stroke seçeneği (isteğe bağlı) */
+.h1-brand--stroke { -webkit-text-stroke: 1px rgba(0,0,0,.35); }
+.h1-brand--extra {
+  --title-core-glow-alpha: .75;
+  --title-wide-glow-alpha: .55;
+}
+
+/* Sheen animasyonu (isteğe bağlı) */
 .h1-brand--sheen::after {
   content:"";
-  position:absolute;
-  inset:0;
-  background:
-    linear-gradient(115deg,
-      rgba(255,255,255,0) 8%,
-      rgba(255,255,255,.8) 12%,
-      rgba(255,255,255,0) 18%);
+  position:absolute; inset:0;
+  background: linear-gradient(115deg,
+      rgba(255,255,255,0) 5%,
+      rgba(255,255,255,.9) 10%,
+      rgba(255,255,255,0) 16%);
   mix-blend-mode: screen;
-  animation: sheenMove 2.2s ease 0.3s both;
+  animation: sheenSlide 2.3s ease .4s both;
   pointer-events:none;
-  border-radius:6px;
 }
-
-@keyframes sheenMove {
-  0% { transform: translateX(-60%) skewX(-12deg); opacity:0; }
-  10% { opacity:.9; }
-  55% { opacity:.85; }
-  100% { transform: translateX(120%) skewX(-12deg); opacity:0; }
-}
-
-@keyframes titlePop {
-  0% { opacity:0; transform: translateY(10px) scale(.97); }
-  100% { opacity:1; transform: translateY(0) scale(1); }
+@keyframes sheenSlide {
+  0% { transform:translateX(-55%) skewX(-12deg); opacity:0; }
+  10% { opacity:1; }
+  55% { opacity:.9; }
+  100% { transform:translateX(120%) skewX(-12deg); opacity:0; }
 }
 
 .subtext {
-  font-size:.96rem;
+  font-size:.95rem;
   color: var(--subtext-color);
   letter-spacing:.55px;
   font-weight:500;
+  margin:0;
   text-shadow:
-    0 1px 2px rgba(0,0,0,.78),
-    0 0 5px rgba(0,0,0,.5);
+    0 1px 2px rgba(0,0,0,.75),
+    0 0 4px rgba(0,0,0,.55);
 }
 
-/* ================= PROGRESS STEPS (değişmedi) ================= */
+/* ================= PROGRESS STEPS ================= */
 .progress-steps {
   display:flex; justify-content:center; gap:.75rem;
-  margin:.15rem 0 .75rem; flex-wrap:wrap;
+  margin:.2rem 0 .75rem; flex-wrap:wrap;
 }
 .step-node {
   width:34px; height:34px; border-radius:50%;
@@ -291,7 +279,7 @@ a { color: var(--color-primary-amber-bright); text-decoration:none; }
   box-shadow:0 4px 12px -5px rgba(201,154,68,.5);
 }
 
-/* ================= PANEL & CARDS (eski sürümle aynı) ============ */
+/* ================= PANEL ================= */
 .services-panel {
   width:100%; max-width:1060px;
   background:linear-gradient(155deg, rgba(38,26,21,.78), rgba(30,21,17,.82) 55%, rgba(26,18,15,.87) 100%);
@@ -308,6 +296,7 @@ a { color: var(--color-primary-amber-bright); text-decoration:none; }
   mix-blend-mode:overlay; pointer-events:none;
 }
 
+/* ================= SERVICES GRID & CARDS ================= */
 .services-grid {
   display:grid;
   grid-template-columns:repeat(auto-fit,minmax(142px,1fr));
@@ -541,13 +530,18 @@ input:focus {
   .step-node { width:30px; height:30px; font-size:.64rem; }
   .review-actions { position:static; margin-bottom:.45rem; }
   .h1-brand { font-size:clamp(1.95rem,5.3vw,2.55rem); }
-  .hero-section::after { width:88%; height:110px; }
+  .hero-section::after { width:85%; height:110px; }
 }
 
-/* ====== QUICK TWEAKS ======
-   Daha şeffaf plate: :root { --hero-title-plate-alpha-scale: 0.75; }
-   Daha parlak altın: :root { --title-vivid-4:#f1bd7a; --title-vivid-5:#e9a64d; }
-   Glow azalt: :root { --title-glow-core-opacity:.65; --title-glow-wide-opacity:.6; }
-   Sheen aç: <h1 class="h1-brand h1-brand--sheen"> ... </h1>
-   Plate kapat: .hero-section::after {display:none;}
-*/
+/* ================= QUICK TWEAKS =================
+   Daha parlak altın:
+     :root { --title-stop-4:#f2c48f; --title-stop-5:#e8a954; }
+   Glow azalt:
+     :root { --title-core-glow-alpha:.35; --title-wide-glow-alpha:.25; }
+   Plate'i şeffaflaştır:
+     :root { --hero-title-plate-strength:.75; }
+   Plate'i kapat:
+     .hero-section::after { display:none; }
+   Sheen efekti ekle:
+     <h1 class="h1-brand h1-brand--sheen">...</h1>
+================================================== */
