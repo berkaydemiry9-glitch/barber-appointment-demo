@@ -1,6 +1,6 @@
 /* ===================================================================
    BARBER BOOKING THEME - Warm Brick / Tungsten Palette
-   v3.2 - Header Visibility Boost
+   v3.3 - Header Plate for Readability (reverted lighter title gradient)
    =================================================================== */
 
 :root {
@@ -42,22 +42,21 @@
 
   --bg-image: url("https://images.unsplash.com/photo-1585747860715-2ba37e788b70?q=80&w=1748&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D");
 
-  /* Title palette (easily tweak) */
-  --title-grad-1: #fffaf5;
-  --title-grad-2: #fbe9d9;
-  --title-grad-3: #eed3b4;
-  --title-grad-4: #dbb186;
-  --title-grad-5: #c28a55;
-  --title-stroke-dark: rgba(0,0,0,.7);
-  --title-stroke-deep: rgba(0,0,0,.85);
-  --title-glow-core: rgba(255,240,215,.55);
-  --title-glow-wide: rgba(215,165,100,.40);
-  --title-outline-soft: rgba(0,0,0,.35);
-  --hero-backdrop-dark: rgba(10,8,7,0.70);
-  --hero-backdrop-edge: rgba(10,8,7,0.05);
+  /* Header plate variables */
+  --hero-title-plate-bg: 15,12,10;                  /* RGB as numbers */
+  --hero-title-plate-border: rgba(255,255,255,.08);
+  --hero-title-plate-blur: 12px;
+  --hero-title-plate-alpha-scale: 1;                /* overall intensity multiplier */
+
+  /* Title gradient (original you liked) */
+  --title-grad: linear-gradient(92deg,#fff8f1 0%,#f2dcc4 40%,#d3b497 78%,#b18d6c 100%);
+  --title-shadow1: 0 1px 1px rgba(0,0,0,.55);
+  --title-shadow2: 0 2px 4px rgba(0,0,0,.55);
+  --title-glow-soft: 0 0 6px rgba(230,190,150,.35);
+  --title-glow-wide: 0 0 22px rgba(200,150,95,.28);
 }
 
-/* GLOBAL + SCROLL LOCK */
+/* ================= GLOBAL / SCROLL LOCK ================= */
 html, body, #root {
   height: 100%;
   margin: 0;
@@ -77,7 +76,7 @@ body {
   overscroll-behavior: none;
 }
 
-/* BACKGROUND */
+/* ================= BACKGROUND ================= */
 body::before {
   content:"";
   position:fixed; inset:0;
@@ -105,15 +104,13 @@ body::after {
   pointer-events:none;
 }
 
+/* Layer ordering */
 .app-shell,
 .services-panel,
 .hero-section,
-.progress-steps {
-  position:relative;
-  z-index:5;
-}
+.progress-steps { position:relative; z-index:5; }
 
-/* TYPOGRAPHY / HERO */
+/* ================= TYPOGRAPHY / HERO ================= */
 h1,h2,h3,h4 { margin:0; font-weight:600; letter-spacing:.5px; }
 a { color: var(--color-primary-amber-bright); text-decoration:none; }
 
@@ -133,109 +130,88 @@ a { color: var(--color-primary-amber-bright); text-decoration:none; }
 
 .hero-section {
   text-align:center;
-  max-width:980px;
-  padding:.65rem 1.3rem .65rem;
+  max-width:1080px;
+  padding:.9rem 1.4rem .95rem;
   position:relative;
+  /* hafif genel halo (arka) */
 }
-
-/* Geniş ovoid karartma */
 .hero-section::before {
   content:"";
   position:absolute;
-  left:50%; top:54%;
+  left:50%; top:56%;
   transform:translate(-50%,-50%);
-  width:min(100%,960px);
-  height:155px;
+  width:min(100%,1000px);
+  height:160px;
   background:
-    radial-gradient(ellipse at 50% 50%, var(--hero-backdrop-dark) 0%, rgba(15,12,10,0.62) 42%, rgba(20,16,14,0.40) 65%, var(--hero-backdrop-edge) 100%);
-  filter: blur(26px);
-  z-index:-1;
-  border-radius:180px;
+    radial-gradient(ellipse at 50% 50%, rgba(20,16,14,0.65) 0%, rgba(15,12,10,0.5) 40%, rgba(15,12,10,0.25) 68%, rgba(15,12,10,0) 100%);
+  filter: blur(24px);
+  z-index:-2;
   pointer-events:none;
+  border-radius:200px;
 }
 
-/* BAŞLIK – Varsayılan (Balanced Bright) */
-.h1-brand {
-  font-size: clamp(2.05rem, 3.9vw, 2.7rem);
-  line-height:1.07;
-  background: linear-gradient(92deg,
-    var(--title-grad-1) 0%,
-    var(--title-grad-2) 18%,
-    var(--title-grad-3) 45%,
-    var(--title-grad-4) 70%,
-    var(--title-grad-5) 100%);
-  -webkit-background-clip: text;
-  color: transparent;
-  font-weight:700;
-  letter-spacing:.75px;
-  margin-bottom:.58rem;
-  position:relative;
-  /* Çok katmanlı shadow kombinasyonu: net stroke + yumuşak glow */
-  text-shadow:
-    0 0 1px var(--title-stroke-deep),
-    0 1px 2px var(--title-stroke-deep),
-    0 2px 4px var(--title-stroke-dark),
-    0 0 6px var(--title-glow-core),
-    0 0 18px var(--title-glow-wide);
-  filter:
-    drop-shadow(0 2px 4px rgba(0,0,0,.55))
-    drop-shadow(0 6px 16px rgba(0,0,0,.55));
-}
-
-/* Mikro lokal plate (okunabilirliği artırır) */
-.h1-brand::before {
+/* LOCAL HEADER PLATE (asıl readability artırıcı) */
+.hero-section::after {
   content:"";
   position:absolute;
-  inset:-6px -14px;
-  background: radial-gradient(circle at 50% 48%, rgba(20,16,14,0.65) 0%, rgba(20,16,14,0.35) 60%, rgba(20,16,14,0) 80%);
-  filter: blur(14px);
+  inset:0;
+  margin:auto;
+  width: clamp(360px, 78%, 980px);
+  height: clamp(96px, 24vh, 165px);
+  top: 4px;
+  background:
+    linear-gradient(140deg,
+      rgba(var(--hero-title-plate-bg), calc(.72 * var(--hero-title-plate-alpha-scale))),
+      rgba(var(--hero-title-plate-bg), calc(.62 * var(--hero-title-plate-alpha-scale))) 55%,
+      rgba(var(--hero-title-plate-bg), calc(.50 * var(--hero-title-plate-alpha-scale))) 100%);
+  backdrop-filter: blur(var(--hero-title-plate-blur)) saturate(1.2);
+  -webkit-backdrop-filter: blur(var(--hero-title-plate-blur)) saturate(1.2);
+  border:1px solid var(--hero-title-plate-border);
+  box-shadow:
+    0 8px 28px -12px rgba(0,0,0,.55),
+    0 2px 10px -4px rgba(0,0,0,.55),
+    0 0 0 1px rgba(255,255,255,.03);
+  border-radius: 42px;
   z-index:-1;
-  opacity:.35;
   pointer-events:none;
-  border-radius:90px;
 }
 
-/* Yüksek Kontrast Mod (isteğe bağlı) */
-.h1-brand.h1-brand--hc {
-  background:linear-gradient(90deg,#ffffff 0%,#f6e8da 40%,#e8caa6 70%,#d19a61 100%);
+/* Title (reverted gradient) */
+.h1-brand {
+  font-size: clamp(2.05rem, 3.9vw, 2.7rem);
+  line-height:1.06;
+  background: var(--title-grad);
+  -webkit-background-clip: text;
+  color:transparent;
+  font-weight:700;
+  letter-spacing:.8px;
+  margin-bottom:.55rem;
   text-shadow:
-    0 0 2px rgba(0,0,0,.8),
-    0 2px 4px rgba(0,0,0,.75),
-    0 0 10px rgba(255,235,210,.55),
-    0 0 24px rgba(230,170,100,.45);
+    var(--title-shadow1),
+    var(--title-shadow2),
+    var(--title-glow-soft),
+    var(--title-glow-wide);
+  filter:
+    drop-shadow(0 2px 4px rgba(0,0,0,.55));
 }
 
-/* Gold Accent Mod */
-.h1-brand.h1-brand--gold {
-  background:linear-gradient(92deg,#fff5e5 0%,#f7d9a8 35%,#e1b266 65%,#c88732 100%);
-  text-shadow:
-    0 0 2px rgba(0,0,0,.75),
-    0 2px 4px rgba(0,0,0,.65),
-    0 0 12px rgba(255,210,140,.55),
-    0 0 30px rgba(210,140,60,.45);
-}
-
-/* Hafif fade in opsiyonu */
-.h1-brand.h1-brand--fadein { animation: titleFade .9s ease .05s both; }
-@keyframes titleFade { 0% {opacity:0; transform:translateY(10px) scale(.97);} 100% {opacity:1; transform:translateY(0) scale(1);} }
-
+/* Subtext daha açık ve net */
 .subtext {
   font-size:.95rem;
-  color:#dccfc5;
-  letter-spacing:.5px;
+  color:#e3d6ce;
+  letter-spacing:.55px;
   font-weight:500;
   text-shadow:
-    0 1px 2px rgba(0,0,0,.8),
-    0 0 6px rgba(0,0,0,.55),
-    0 0 10px rgba(0,0,0,.5);
+    0 1px 2px rgba(0,0,0,.75),
+    0 0 5px rgba(0,0,0,.5);
 }
 
-/* STEP INDICATOR */
+/* ================= PROGRESS STEPS ================= */
 .progress-steps {
   display:flex;
   justify-content:center;
   gap:.75rem;
-  margin:.1rem 0 .7rem;
+  margin:.15rem 0 .75rem;
   flex-wrap:wrap;
 }
 .step-node {
@@ -260,7 +236,7 @@ a { color: var(--color-primary-amber-bright); text-decoration:none; }
   box-shadow:0 4px 12px -5px rgba(201,154,68,.5);
 }
 
-/* PANEL */
+/* ================= PANEL ================= */
 .services-panel {
   width:100%; max-width:1060px;
   background:linear-gradient(155deg, rgba(38,26,21,.78), rgba(30,21,17,.82) 55%, rgba(26,18,15,.87) 100%);
@@ -277,7 +253,7 @@ a { color: var(--color-primary-amber-bright); text-decoration:none; }
   mix-blend-mode:overlay; pointer-events:none;
 }
 
-/* SERVICES GRID & CARDS */
+/* ================= SERVICES GRID & CARDS ================= */
 .services-grid {
   display:grid;
   grid-template-columns:repeat(auto-fit,minmax(142px,1fr));
@@ -372,7 +348,7 @@ a { color: var(--color-primary-amber-bright); text-decoration:none; }
   text-shadow:none;
 }
 
-/* ACTIONS BAR */
+/* ================= ACTIONS BAR ================= */
 .actions-bar {
   display:flex; justify-content:space-between; align-items:center;
   gap:.85rem; flex-wrap:wrap;
@@ -387,7 +363,7 @@ a { color: var(--color-primary-amber-bright); text-decoration:none; }
   text-shadow:0 1px 2px rgba(0,0,0,.55);
 }
 
-/* BUTTONS */
+/* ================= BUTTONS ================= */
 .btn {
   --btn-bg:linear-gradient(92deg,var(--color-primary-amber-dark),var(--color-primary-amber));
   --btn-bg-hover:linear-gradient(92deg,var(--color-primary-amber),var(--color-primary-amber-bright));
@@ -439,7 +415,7 @@ a { color: var(--color-primary-amber-bright); text-decoration:none; }
   text-shadow:0 0 6px rgba(226,168,80,.75);
 }
 
-/* FORM */
+/* ================= FORM ================= */
 input {
   color:var(--color-text);
   background:#241811;
@@ -456,7 +432,7 @@ input:focus {
   background:#2c1e16;
 }
 
-/* REVIEW */
+/* ================= REVIEW ================= */
 .review-section { display:flex; flex-direction:column; gap:.95rem; }
 .review-block {
   background:
@@ -501,8 +477,8 @@ input:focus {
   right:.55rem;
 }
 
-/* RESPONSIVE */
-@media (max-width:680px) {
+/* ================= RESPONSIVE ================= */
+@media (max-width: 680px) {
   .services-panel { padding:.9rem .8rem 1.05rem; border-radius:18px; }
   .service-card { min-height:138px; padding:.68rem .58rem .6rem; }
   .service-icon { width:38px; height:38px; border-radius:12px; }
@@ -510,14 +486,13 @@ input:focus {
   .progress-steps { gap:.5rem; }
   .step-node { width:30px; height:30px; font-size:.64rem; }
   .review-actions { position:static; margin-bottom:.45rem; }
-  .h1-brand { font-size:clamp(1.8rem,5.4vw,2.35rem); }
+  .h1-brand { font-size:clamp(1.85rem,5.2vw,2.4rem); }
+  .hero-section::after { width:90%; height:140px; }
 }
 
-/* OPTIONAL QUICK TWEAKS
-   - Başlığı biraz daha parlak: arttır glow
-.h1-brand { --title-glow-core: rgba(255,245,225,.7); --title-glow-wide: rgba(240,190,120,.55); }
-   - Arka planı hafif aç:
-body::before { filter: blur(2.8px) saturate(1.02) brightness(0.82); }
-   - Vignette azalt:
-body::after { opacity:.6; }
-*/
+/* ================= QUICK TWEAKS (comment/uncomment) ================
+   Plate opaklığını artır: :root { --hero-title-plate-alpha-scale: 1.15; }
+   Plate daha küçük: .hero-section::after { height:130px; }
+   Arka plan biraz daha aydın: body::before { filter: blur(2.8px) saturate(1.05) brightness(0.82); }
+   Plate iptal: .hero-section::after { display:none; }
+===================================================================== */
