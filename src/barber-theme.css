@@ -1,5 +1,9 @@
-/* =============  BARBER THEME (Brick / Warm Tungsten)  ============= */
+/* ===================================================================
+   BARBER BOOKING THEME - Warm Brick / Tungsten Palette
+   (Full file with stacking fix & background image support)
+   =================================================================== */
 
+/* ------------ Root Variables (adjust colors / image here) ---------- */
 :root {
   --color-bg-deep: #0f1214;
   --color-bg: #14181a;
@@ -18,6 +22,7 @@
   --color-border: #2a1e1a;
   --color-border-soft: #3a2923;
   --color-danger: #dd5c52;
+
   --color-overlay-grad1: rgba(20,14,12,0.82);
   --color-overlay-grad2: rgba(20,14,12,0.92);
   --color-overlay-grad3: rgba(14,10,8,0.96);
@@ -36,28 +41,30 @@
   --transition: .28s cubic-bezier(.4,.2,.2,1);
   --font-stack: 'Inter','SF Pro Text',system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen,Ubuntu,Cantarell,"Helvetica Neue",Arial,sans-serif;
 
-  --bg-image: url("https://images.unsplash.com/photo-1585747860715-2ba37e788b70?auto=format&fit=crop&w=1600&q=75");
+  /* Background image (Unsplash URL you provided) */
+  --bg-image: url("https://images.unsplash.com/photo-1585747860715-2ba37e788b70?q=80&w=1748&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D");
 }
 
-/* Eğer resmi public klasöre koyduysan:
-   --bg-image: url("/barber-bg.jpg");
-*/
-
-/* Genel Reset / Box Model */
-* { box-sizing: border-box; }
-
+/* ===================================================================
+   STACKING FIX (ensures background photo pseudo-elements are visible)
+   =================================================================== */
 html, body, #root {
   height: 100%;
   margin: 0;
   font-family: var(--font-stack);
   color: var(--color-text);
   -webkit-font-smoothing: antialiased;
-  background: var(--color-bg-deep);
-  overflow-x: hidden;
-  position: relative;
+  background: transparent; /* allow ::before background to show */
 }
 
-/* Arka plan: Fotoğraf + karartma + blur */
+body {
+  background: var(--color-bg-deep); /* fallback color */
+  position: relative;
+  z-index: 0;
+  overflow-x: hidden;
+}
+
+/* Background photo + dark overlays */
 body::before {
   content: "";
   position: fixed;
@@ -69,10 +76,11 @@ body::before {
       var(--color-overlay-grad3) 100%),
     var(--bg-image) center center / cover no-repeat;
   filter: blur(4px) saturate(1.05) brightness(.92);
-  z-index: -3;
+  z-index: 0;
+  pointer-events: none;
 }
 
-/* Işık yayılımları & sıcak highlight overlay */
+/* Light glow / warmth overlays */
 body::after {
   content: "";
   position: fixed;
@@ -83,10 +91,22 @@ body::after {
     radial-gradient(circle at 15% 70%, rgba(155,81,16,.18), transparent 65%);
   mix-blend-mode: screen;
   opacity: .45;
-  z-index: -2;
+  z-index: 1;
   pointer-events: none;
 }
 
+/* Elevate app content above background layers */
+.app-shell,
+.services-panel,
+.hero-section,
+.progress-steps {
+  position: relative;
+  z-index: 5;
+}
+
+/* ===================================================================
+   TYPOGRAPHY & UTILITIES
+   =================================================================== */
 h1,h2,h3,h4 {
   margin: 0;
   font-weight: 600;
@@ -95,6 +115,18 @@ h1,h2,h3,h4 {
 
 a { color: var(--color-primary-amber-bright); text-decoration: none; }
 
+.fade-in {
+  animation: fadeIn .55s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ===================================================================
+   LAYOUT
+   =================================================================== */
 .app-shell {
   width: 100%;
   min-height: 100%;
@@ -130,7 +162,9 @@ a { color: var(--color-primary-amber-bright); text-decoration: none; }
   text-shadow: 0 1px 2px rgba(0,0,0,.6);
 }
 
-/* Step Indicator */
+/* ===================================================================
+   STEP INDICATOR
+   =================================================================== */
 .progress-steps {
   display: flex;
   justify-content: center;
@@ -171,7 +205,9 @@ a { color: var(--color-primary-amber-bright); text-decoration: none; }
   box-shadow: 0 5px 14px -6px rgba(216,162,74,.55);
 }
 
-/* Panel (Glass Brick Blur) */
+/* ===================================================================
+   PANEL (Glass / Warm)
+   =================================================================== */
 .services-panel {
   width: 100%;
   max-width: 1060px;
@@ -196,6 +232,9 @@ a { color: var(--color-primary-amber-bright); text-decoration: none; }
   pointer-events:none;
 }
 
+/* ===================================================================
+   SERVICES GRID & CARDS
+   =================================================================== */
 .services-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(142px, 1fr));
@@ -203,7 +242,6 @@ a { color: var(--color-primary-amber-bright); text-decoration: none; }
   margin-bottom: 1.05rem;
 }
 
-/* Service Card */
 .service-card {
   position: relative;
   background:
@@ -258,7 +296,6 @@ a { color: var(--color-primary-amber-bright); text-decoration: none; }
   100% { box-shadow: 0 0 0 0 rgba(201,132,48,0), 0 6px 18px -6px rgba(0,0,0,.8); }
 }
 
-/* Icon container */
 .service-icon {
   display: inline-flex;
   align-items: center;
@@ -322,7 +359,9 @@ a { color: var(--color-primary-amber-bright); text-decoration: none; }
   text-shadow: none;
 }
 
-/* Actions Bar */
+/* ===================================================================
+   ACTIONS BAR
+   =================================================================== */
 .actions-bar {
   display: flex;
   justify-content: space-between;
@@ -342,7 +381,9 @@ a { color: var(--color-primary-amber-bright); text-decoration: none; }
   text-shadow: 0 1px 2px rgba(0,0,0,.6);
 }
 
-/* Buttons */
+/* ===================================================================
+   BUTTONS
+   =================================================================== */
 .btn {
   --btn-bg: linear-gradient(92deg,var(--color-primary-amber-dark),var(--color-primary-amber));
   --btn-bg-hover: linear-gradient(92deg,var(--color-primary-amber),var(--color-primary-amber-bright));
@@ -413,6 +454,9 @@ a { color: var(--color-primary-amber-bright); text-decoration: none; }
   text-shadow: 0 0 6px rgba(255,196,120,.75);
 }
 
+/* ===================================================================
+   FORM ELEMENTS
+   =================================================================== */
 input {
   color: var(--color-text);
   background: #241a15;
@@ -430,17 +474,9 @@ input:focus {
   background: #2d201a;
 }
 
-/* Fade in */
-.fade-in {
-  animation: fadeIn .55s ease;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(6px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* Review Blocks */
+/* ===================================================================
+   REVIEW SECTION
+   =================================================================== */
 .review-section {
   display: flex;
   flex-direction: column;
@@ -497,6 +533,9 @@ input:focus {
   right: .65rem;
 }
 
+/* ===================================================================
+   RESPONSIVE
+   =================================================================== */
 @media (max-width: 680px) {
   .services-panel {
     padding: .95rem .85rem 1.2rem;
@@ -519,12 +558,14 @@ input:focus {
   .review-actions { position: static; margin-bottom: .5rem; }
 }
 
-/* ================= OPTIONAL (Kolay Tema Değişimi İçin) =================
-   Eğer alternatif biraz daha nötr (daha az turuncu) istersen sadece şu değişkenleri override edebilirsin:
-   :root {
-     --color-primary-amber-dark: #7e4012;
-     --color-primary-amber: #b46318;
-     --color-primary-amber-bright: #d6852c;
-     --color-gold: #c79645;
-   }
+/* ===================================================================
+   OPTIONAL THEME TWEAKS (uncomment / override as needed)
+   =================================================================== */
+/*
+:root {
+  --color-primary-amber-dark: #7e4012;
+  --color-primary-amber: #b46318;
+  --color-primary-amber-bright: #d6852c;
+  --color-gold: #c79645;
+}
 */
