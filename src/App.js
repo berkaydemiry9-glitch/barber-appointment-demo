@@ -1,16 +1,16 @@
 import React, { useState } from "react";
 import "./barber-theme.css";
 import {
-  FaCut,
-  FaRazor,
-  FaChild,
-  FaHotTub,
-  FaAlignCenter,
-  FaUserTie,
-  FaWater,
-  FaSmile,
-  FaCheck
-} from "react-icons/fa";
+  IconCut,
+  IconRazor,
+  IconChild,
+  IconHotTowel,
+  IconLineUp,
+  IconFade,
+  IconShampoo,
+  IconFacial,
+  IconCheck
+} from "./icons";
 
 // ===== Data =====
 const servicesList = [
