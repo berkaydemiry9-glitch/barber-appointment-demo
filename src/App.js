@@ -14,14 +14,14 @@ import {
 
 // ===== Data =====
 const servicesList = [
-  { key: "haircut", name: "Haircut", duration: 30, icon: IconCut },
-  { key: "beard", name: "Beard Trim", duration: 20, icon: IconRazor },
-  { key: "kids", name: "Kids Haircut", duration: 25, icon: IconChild },
-  { key: "hotTowel", name: "Hot Towel Shave", duration: 25, icon: IconHotTowel },
-  { key: "lineup", name: "Line Up", duration: 15, icon: IconLineUp },
-  { key: "fade", name: "Fade", duration: 35, icon: IconUserTie },
-  { key: "shampoo", name: "Shampoo & Style", duration: 20, icon: IconWater },
-  { key: "facial", name: "Facial", duration: 30, icon: IconSmile }
+  { key: "haircut",  name: "Haircut",          duration: 30, icon: IconCut },
+  { key: "beard",    name: "Beard Trim",       duration: 20, icon: IconRazor },
+  { key: "kids",     name: "Kids Haircut",     duration: 25, icon: IconChild },
+  { key: "hotTowel", name: "Hot Towel Shave",  duration: 25, icon: IconHotTowel },
+  { key: "lineup",   name: "Line Up",          duration: 15, icon: IconLineUp },
+  { key: "fade",     name: "Fade",             duration: 35, icon: IconFade },
+  { key: "shampoo",  name: "Shampoo & Style",  duration: 20, icon: IconShampoo },
+  { key: "facial",   name: "Facial",           duration: 30, icon: IconFacial }
 ];
 
 const barbersList = [
@@ -58,7 +58,7 @@ function getNext7Days() {
         month: "short",
         day: "2-digit"
       }),
-      dayIdx: d.getDay()
+        dayIdx: d.getDay()
     };
   });
 }
@@ -84,7 +84,6 @@ function getAvailableSlots({ workingHours, appointments, totalDuration, dateStr,
     const start = (h * 60 + m) + i * slotInterval;
     const end = start + totalDuration;
     if (end > (eh * 60 + em)) break;
-    // (Not implementing overlap logic here; placeholder.)
     slots.push(to12Hour(Math.floor(start / 60), start % 60));
   }
   return slots;
@@ -111,18 +110,15 @@ export default function App() {
   const [slot, setSlot] = useState("");
   const [customer, setCustomer] = useState({ name: "", phone: "", email: "" });
 
-  // --- STEP 1: Services (Homepage) ---
+  // --- STEP 1
   if (step === 1) {
     const total = sumDurations(selectedServices);
     return (
       <div className="app-shell fade-in">
         <div className="hero-section">
-          <h1 className="h1-brand">
-            Atlanta Barber Shop
-          </h1>
+          <h1 className="h1-brand">Atlanta Barber Shop</h1>
           <div className="subtext">Select your services</div>
         </div>
-
         <div className="services-panel fade-in">
           <div className="services-grid">
             {servicesList.map(s => {
@@ -142,21 +138,18 @@ export default function App() {
                   }
                   aria-pressed={isSelected}
                 >
-                  <span className="service-icon">
-                    <Icon />
-                  </span>
+                  <span className="service-icon"><Icon /></span>
                   <span className="service-name">{s.name}</span>
                   <span className="service-duration">{s.duration} min</span>
                   {isSelected && (
                     <span className="badge-new" aria-label="Selected">
-                      <FaCheck style={{ fontSize: "0.6rem" }} />
+                      <IconCheck style={{ fontSize: "0.6rem" }} />
                     </span>
                   )}
                 </button>
               );
             })}
           </div>
-
           <div className="actions-bar">
             <div className="total-duration">
               Total Duration: <strong>{total} min</strong>
@@ -166,18 +159,12 @@ export default function App() {
                 className="btn"
                 disabled={selectedServices.length === 0}
                 onClick={() => setStep(2)}
-              >
-                Next
-              </button>
+              >Next</button>
               <button
                 className="btn btn-secondary"
-                onClick={() => {
-                  setSelectedServices([]);
-                }}
+                onClick={() => setSelectedServices([])}
                 disabled={selectedServices.length === 0}
-              >
-                Clear
-              </button>
+              >Clear</button>
             </div>
           </div>
         </div>
@@ -185,7 +172,7 @@ export default function App() {
     );
   }
 
-  // --- STEP 2: Barber Selection ---
+  // --- STEP 2
   if (step === 2) {
     return (
       <div className="app-shell fade-in">
@@ -194,29 +181,17 @@ export default function App() {
           <div className="subtext">Step 2</div>
         </div>
         <div className="services-panel fade-in" style={{ maxWidth: 820 }}>
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit,minmax(180px,1fr))",
-              gap: "1rem",
-              marginBottom: "1.25rem"
-            }}
-          >
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(180px,1fr))", gap: "1rem", marginBottom: "1.25rem" }}>
             {barbersList.map(b => {
               const active = selectedBarber?.name === b.name;
               return (
                 <button
                   key={b.name}
-                  onClick={() => {
-                    setSelectedBarber(b);
-                    setStep(3);
-                  }}
+                  onClick={() => { setSelectedBarber(b); setStep(3); }}
                   style={{
                     background: active ? "linear-gradient(120deg,#1e3a8a,#2563eb)" : "#fff",
                     color: active ? "#fff" : "var(--color-text)",
-                    border: active
-                      ? "1px solid #2563eb"
-                      : "1px solid var(--color-border)",
+                    border: active ? "1px solid #2563eb" : "1px solid var(--color-border)",
                     borderRadius: "16px",
                     padding: "1rem .9rem",
                     minHeight: 170,
@@ -225,9 +200,7 @@ export default function App() {
                     gap: ".7rem",
                     alignItems: "center",
                     cursor: "pointer",
-                    boxShadow: active
-                      ? "0 8px 24px -6px rgba(37,99,235,0.35)"
-                      : "var(--shadow-sm)",
+                    boxShadow: active ? "0 8px 24px -6px rgba(37,99,235,0.35)" : "var(--shadow-sm)",
                     transition: "var(--transition)"
                   }}
                 >
@@ -243,56 +216,32 @@ export default function App() {
                       boxShadow: "0 4px 10px -2px rgba(0,0,0,.25)"
                     }}
                   />
-                  <span
-                    style={{
-                      fontWeight: 600,
-                      letterSpacing: ".4px",
-                      fontSize: ".95rem"
-                    }}
-                  >
-                    {b.name}
-                  </span>
-                  <span
-                    style={{
-                      fontSize: ".65rem",
-                      letterSpacing: ".7px",
-                      fontWeight: 600,
-                      opacity: 0.75,
-                      textTransform: "uppercase"
-                    }}
-                  >
-                    Mon-Sat
-                  </span>
+                  <span style={{ fontWeight: 600, letterSpacing: ".4px", fontSize: ".95rem" }}>{b.name}</span>
+                  <span style={{ fontSize: ".65rem", letterSpacing: ".7px", fontWeight: 600, opacity: 0.75, textTransform: "uppercase" }}>Mon-Sat</span>
                 </button>
               );
             })}
           </div>
           <div style={{ display: "flex", gap: ".75rem", justifyContent: "flex-end" }}>
-            <button
-              className="btn btn-secondary"
-              onClick={() => setStep(1)}
-            >
-              Back
-            </button>
+            <button className="btn btn-secondary" onClick={() => setStep(1)}>Back</button>
           </div>
         </div>
       </div>
     );
   }
 
-  // --- STEP 3: Date + Time ---
+  // --- STEP 3
   if (step === 3) {
     const total = sumDurations(selectedServices);
     const days = getNext7Days();
-    const slots =
-      date && selectedBarber
-        ? getAvailableSlots({
-            workingHours: selectedBarber.workingHours,
-            appointments: selectedBarber.appointments,
-            totalDuration: total,
-            dateStr: date
-          })
-        : [];
+    const slots = date && selectedBarber
+      ? getAvailableSlots({
+          workingHours: selectedBarber.workingHours,
+          appointments: selectedBarber.appointments,
+          totalDuration: total,
+          dateStr: date
+        })
+      : [];
 
     return (
       <div className="app-shell fade-in">
@@ -301,110 +250,54 @@ export default function App() {
           <div className="subtext">Step 3</div>
         </div>
         <div className="services-panel" style={{ maxWidth: 880 }}>
-          <div
-            style={{
-              display: "flex",
-              flexWrap: "wrap",
-              gap: ".6rem",
-              marginBottom: "1.1rem"
-            }}
-          >
+          <div style={{ display: "flex", flexWrap: "wrap", gap: ".6rem", marginBottom: "1.1rem" }}>
             {days.map(d => (
               <button
                 key={d.dateStr}
-                onClick={() => {
-                  setDate(d.dateStr);
-                  setSlot("");
-                }}
+                onClick={() => { setDate(d.dateStr); setSlot(""); }}
                 className="btn btn-secondary"
                 style={{
                   minWidth: 120,
-                  background:
-                    date === d.dateStr
-                      ? "linear-gradient(90deg,#1e3a8a,#2563eb)"
-                      : "#fff",
+                  background: date === d.dateStr ? "linear-gradient(90deg,#1e3a8a,#2563eb)" : "#fff",
                   color: date === d.dateStr ? "#fff" : "var(--color-primary)",
-                  borderColor:
-                    date === d.dateStr
-                      ? "transparent"
-                      : "var(--color-border)"
+                  borderColor: date === d.dateStr ? "transparent" : "var(--color-border)"
                 }}
-              >
-                {d.label}
-              </button>
+              >{d.label}</button>
             ))}
           </div>
 
-            {date && (
-              <>
-                <div
-                  style={{
-                    fontSize: ".75rem",
-                    fontWeight: 600,
-                    letterSpacing: ".7px",
-                    color: "var(--color-text-light)",
-                    textTransform: "uppercase",
-                    marginBottom: ".5rem"
-                  }}
-                >
-                  Available Slots
-                </div>
-                <div
-                  style={{
-                    display: "flex",
-                    flexWrap: "wrap",
-                    gap: ".55rem",
-                    marginBottom: "1.2rem"
-                  }}
-                >
-                  {slots.length === 0 && (
-                    <span style={{ fontSize: ".85rem", color: "#9ca3af" }}>
-                      No slots for this day
-                    </span>
-                  )}
-                  {slots.map(t => (
-                    <button
-                      key={t}
-                      onClick={() => setSlot(t)}
-                      className="btn btn-secondary"
-                      style={{
-                        background:
-                          slot === t
-                            ? "linear-gradient(90deg,#1e3a8a,#2563eb)"
-                            : "#fff",
-                        color: slot === t ? "#fff" : "var(--color-primary)",
-                        padding: ".55rem .85rem",
-                        minWidth: "unset"
-                      }}
-                    >
-                      {t} – {addMinutes(t, total)}
-                    </button>
-                  ))}
-                </div>
-              </>
-            )}
+          {date && (
+            <>
+              <div style={{ fontSize: ".75rem", fontWeight: 600, letterSpacing: ".7px", color: "var(--color-text-light)", textTransform: "uppercase", marginBottom: ".5rem" }}>Available Slots</div>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: ".55rem", marginBottom: "1.2rem" }}>
+                {slots.length === 0 && <span style={{ fontSize: ".85rem", color: "#9ca3af" }}>No slots for this day</span>}
+                {slots.map(t => (
+                  <button
+                    key={t}
+                    onClick={() => setSlot(t)}
+                    className="btn btn-secondary"
+                    style={{
+                      background: slot === t ? "linear-gradient(90deg,#1e3a8a,#2563eb)" : "#fff",
+                      color: slot === t ? "#fff" : "var(--color-primary)",
+                      padding: ".55rem .85rem",
+                      minWidth: "unset"
+                    }}
+                  >{t} – {addMinutes(t, total)}</button>
+                ))}
+              </div>
+            </>
+          )}
 
           <div style={{ display: "flex", gap: ".75rem", justifyContent: "flex-end" }}>
-            <button
-              className="btn btn-secondary"
-              onClick={() => setStep(2)}
-            >
-              Back
-            </button>
-            <button
-              className="btn"
-              disabled={!date || !slot}
-              onClick={() => setStep(4)}
-            >
-              Next
-            </button>
+            <button className="btn btn-secondary" onClick={() => setStep(2)}>Back</button>
+            <button className="btn" disabled={!date || !slot} onClick={() => setStep(4)}>Next</button>
           </div>
         </div>
       </div>
     );
   }
 
-  // --- STEP 4: Customer Info ---
+  // --- STEP 4
   if (step === 4) {
     return (
       <div className="app-shell fade-in">
@@ -415,40 +308,15 @@ export default function App() {
         <div className="services-panel" style={{ maxWidth: 640 }}>
           <div style={{ display: "flex", flexDirection: "column", gap: ".9rem" }}>
             {["Full Name", "Phone", "Email (optional)"].map(label => {
-              const key =
-                label === "Full Name"
-                  ? "name"
-                  : label.startsWith("Phone")
-                  ? "phone"
-                  : "email";
+              const key = label === "Full Name" ? "name" : label.startsWith("Phone") ? "phone" : "email";
               return (
                 <div key={label} style={{ display: "flex", flexDirection: "column", gap: ".35rem" }}>
-                  <label
-                    style={{
-                      fontSize: ".75rem",
-                      fontWeight: 600,
-                      letterSpacing: ".6px",
-                      textTransform: "uppercase",
-                      color: "var(--color-text-light)"
-                    }}
-                  >
-                    {label}
-                  </label>
+                  <label style={{ fontSize: ".75rem", fontWeight: 600, letterSpacing: ".6px", textTransform: "uppercase", color: "var(--color-text-light)" }}>{label}</label>
                   <input
-                    style={{
-                      padding: ".75rem .9rem",
-                      borderRadius: "12px",
-                      border: "1px solid var(--color-border)",
-                      fontSize: ".95rem",
-                      background: "#fff",
-                      outline: "none",
-                      transition: "var(--transition)"
-                    }}
+                    style={{ padding: ".75rem .9rem", borderRadius: "12px", border: "1px solid var(--color-border)", fontSize: ".95rem", background: "#fff", outline: "none", transition: "var(--transition)" }}
                     placeholder={label}
                     value={customer[key]}
-                    onChange={e =>
-                      setCustomer(c => ({ ...c, [key]: e.target.value }))
-                    }
+                    onChange={e => setCustomer(c => ({ ...c, [key]: e.target.value }))}
                     type="text"
                   />
                 </div>
@@ -456,26 +324,15 @@ export default function App() {
             })}
           </div>
           <div style={{ display: "flex", gap: ".75rem", justifyContent: "flex-end", marginTop: "1.2rem" }}>
-            <button
-              className="btn btn-secondary"
-              onClick={() => setStep(3)}
-            >
-              Back
-            </button>
-            <button
-              className="btn"
-              disabled={!customer.name || !customer.phone}
-              onClick={() => setStep(5)}
-            >
-              Confirm
-            </button>
+            <button className="btn btn-secondary" onClick={() => setStep(3)}>Back</button>
+            <button className="btn" disabled={!customer.name || !customer.phone} onClick={() => setStep(5)}>Confirm</button>
           </div>
         </div>
       </div>
     );
   }
 
-  // --- STEP 5: Success ---
+  // --- STEP 5
   return (
     <div className="app-shell fade-in">
       <div className="hero-section">
@@ -489,18 +346,11 @@ export default function App() {
             Your booking is confirmed. A reminder can be added later via SMS/email system.
           </div>
         </div>
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit,minmax(170px,1fr))",
-            gap: ".75rem",
-            marginBottom: "1.2rem"
-          }}
-        >
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(170px,1fr))", gap: ".75rem", marginBottom: "1.2rem" }}>
           <DetailCard label="Services" value={servicesList.filter(s => selectedServices.includes(s.key)).map(s => s.name).join(", ")} />
           <DetailCard label="Barber" value={selectedBarber?.name || "-"} />
           <DetailCard label="Date" value={date || "-"} />
-            <DetailCard label="Time" value={slot || "-"} />
+          <DetailCard label="Time" value={slot || "-"} />
           <DetailCard label="Phone" value={customer.phone || "-"} />
           <DetailCard label="Email" value={customer.email || "—"} />
         </div>
@@ -515,52 +365,39 @@ export default function App() {
               setSlot("");
               setCustomer({ name: "", phone: "", email: "" });
             }}
-          >
-            Book Another
-          </button>
+          >Book Another</button>
         </div>
       </div>
     </div>
   );
 }
 
-// Small reusable detail card
 function DetailCard({ label, value }) {
   return (
-    <div
-      style={{
-        background: "linear-gradient(180deg,var(--color-surface-alt),#ffffff)",
-        border: "1px solid var(--color-border)",
-        borderRadius: "14px",
-        padding: ".85rem .9rem",
-        minHeight: 90,
-        display: "flex",
-        flexDirection: "column",
-        gap: ".4rem",
-        boxShadow: "var(--shadow-sm)"
-      }}
-    >
-      <span
-        style={{
-          fontSize: ".65rem",
-          fontWeight: 600,
-          letterSpacing: ".6px",
-          textTransform: "uppercase",
-          color: "var(--color-text-light)"
-        }}
-      >
-        {label}
-      </span>
-      <span
-        style={{
-          fontSize: ".85rem",
-          fontWeight: 600,
-          color: "var(--color-primary)",
-          lineHeight: 1.25
-        }}
-      >
-        {value || "—"}
-      </span>
+    <div style={{
+      background: "linear-gradient(180deg,var(--color-surface-alt),#ffffff)",
+      border: "1px solid var(--color-border)",
+      borderRadius: "14px",
+      padding: ".85rem .9rem",
+      minHeight: 90,
+      display: "flex",
+      flexDirection: "column",
+      gap: ".4rem",
+      boxShadow: "var(--shadow-sm)"
+    }}>
+      <span style={{
+        fontSize: ".65rem",
+        fontWeight: 600,
+        letterSpacing: ".6px",
+        textTransform: "uppercase",
+        color: "var(--color-text-light)"
+      }}>{label}</span>
+      <span style={{
+        fontSize: ".85rem",
+        fontWeight: 600,
+        color: "var(--color-primary)",
+        lineHeight: 1.25
+      }}>{value || "—"}</span>
     </div>
   );
 }
