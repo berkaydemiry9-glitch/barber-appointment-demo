@@ -1,19 +1,7 @@
 /* ===================================================================
    BARBER BOOKING THEME - Warm Brick / Tungsten Palette
-   v3.7a - Pure White Title + Soft Plate + Transparent Panels + Unified Step 2/3 Theme
-   -------------------------------------------------------------------
-   Bu sürüm şunları içerir:
-   1. Başlık arkası sert siyah panel kaldırıldı; yerine yumuşak, küçük, yarı saydam oval fade.
-   2. Başlık tamamen beyaz; hafif stroke + yumuşak glow; ışık patlaması daha subtil.
-   3. Hizmet (services-panel) katmanı daha şeffaf (arka plan tuğla dokusu biraz görünür).
-   4. Adım 2 (zaman/saat seçimi) ve Adım 3 (berber seçimi) stilleri hizmet kartlarıyla tutarlı.
-   5. Responsive ayarlar korundu.
-   -------------------------------------------------------------------
-   Hızlı Ayar Noktaları (CTRL+F):
-   - HERO TITLE INTENSITY
-   - SERVICES PANEL TRANSPARENCY
-   - TIME SLOT & BARBER CARD
-   - QUICK TWEAKS
+   v3.7a (fixed) - Pure White Title + Soft Plate + Transparent Panels + Unified Step 2/3 Theme
+   Fixes: Missing @media closing brace, unclosed comment.
    =================================================================== */
 
 :root {
@@ -42,20 +30,20 @@
   --color-overlay-grad3: rgba(8,6,5,0.94);
 
   /* ---------- HERO TITLE INTENSITY (Pure White Variant) ---------- */
-  --title-white-core-glow-alpha: .50;   /* 0.0 - .9 (metin etrafı yumuşak core glow) */
-  --title-white-wide-glow-alpha: .30;   /* 0.0 - .6 (daha geniş halo) */
+  --title-white-core-glow-alpha: .50;
+  --title-white-wide-glow-alpha: .30;
 
   /* Başlık arkası ışık patlaması */
   --hero-glow-core: rgba(255,255,255,0.92);
   --hero-glow-mid:  rgba(255,238,215,0.55);
   --hero-glow-warm: rgba(255,215,150,0.30);
   --hero-glow-fade: rgba(120,70,30,0.12);
-  --hero-glow-radius: 42%;  /* Radial uzama */
+  --hero-glow-radius: 42%;
   --hero-glow-strength: .95;
   --hero-glow-blur: 30px;
-  --hero-glow-y-shift: -8%; /* Negatif yukarı kayma */
+  --hero-glow-y-shift: -8%;
 
-  --hero-title-plate-strength: 0.88; /* Plate koyuluk algısı (0.7-1.0) */
+  --hero-title-plate-strength: 0.88;
   --subtext-color: #ece4de;
 
   /* Başlık stroke & shadow */
@@ -183,7 +171,7 @@ a { color: var(--color-primary-amber-bright); text-decoration:none; }
   border-radius:200px;
 }
 
-/* Yumuşatılmış küçük plate (sert siyah yok) */
+/* Yumuşatılmış küçük plate */
 .hero-section::after {
   content:"";
   position:absolute;
@@ -502,7 +490,7 @@ a { color: var(--color-primary-amber-bright); text-decoration:none; }
   text-decoration:line-through;
 }
 
-/* Barber Seçim Grid */
+/* Barber Grid */
 .barbers-grid {
   display:grid;
   grid-template-columns:repeat(auto-fill,minmax(160px,1fr));
@@ -739,12 +727,11 @@ input:focus {
   .barbers-grid { grid-template-columns:repeat(auto-fill,minmax(130px,1fr)); gap:.55rem; }
   .barber-card { min-height:126px; padding:.65rem .6rem .6rem; }
   .barber-avatar { width:50px; height:50px; border-radius:14px; }
+}
 
 /* =========================================
    DATE & TIME PILLS - TEXT COLOR TO BLACK
    ========================================= */
-
-/* Tarih (gün) butonları – genel */
 .date-pill,
 .date-item,
 .day-pill,
@@ -756,8 +743,6 @@ input:focus {
   font-weight:650;
   text-shadow:none;
 }
-
-/* Saat slotları (senin grid’inde beyaz zeminli) */
 .time-slot,
 .slot-pill,
 .slot-button,
@@ -766,14 +751,10 @@ input:focus {
   font-weight:650;
   text-shadow:none;
 }
-
-/* Eğer slotlar <button> ise */
 .schedule-grid button {
   color:#111;
   font-weight:650;
 }
-
-/* Disabled / unavailable görünümleri hafif gri kalsın */
 .time-slot.unavailable,
 .slot-pill[disabled],
 .date-pill.disabled,
@@ -781,8 +762,6 @@ input:focus {
   color:#b9b3af !important;
   font-weight:600;
 }
-
-/* Seçili durum (mavi / amber / koyu zemin) */
 .date-pill.active,
 .date-pill.is-active,
 .day-button.active,
@@ -793,35 +772,19 @@ input:focus {
   color:#fff !important;
   text-shadow:0 1px 2px rgba(0,0,0,.35);
 }
-
-/* Hover’da siyah kalırken sınır/arka planın değişmesi durumunda ek kontrast */
 .date-pill:hover:not(.active),
 .time-slot:hover:not(.selected) {
   color:#111;
 }
-
-/* Eğer component library tikrarlanmış inline color yazıyorsa – daha agresif override */
 .date-pill span,
 .time-slot span {
   color:inherit !important;
 }
 
-/* (Opsiyonel) Mavi seçili pil tonunu yumuşatmak istersen
+/* (Opsiyonel) Mavi seçili pil tonunu yumuşatmak istersen:
 .date-pill.active,
 .date-tabs button[aria-selected="true"] {
   background:linear-gradient(135deg,#2850c5,#1d3f9f);
   border-color:#16347f;
 }
-
-/* ===================================================================
-   QUICK TWEAKS (yorum satırından çıkarıp kullan)
-   -------------------------------------------------------------------
-   Başlık daha da düz: .h1-brand { -webkit-text-stroke:.5px rgba(0,0,0,.45); text-shadow:0 2px 4px rgba(0,0,0,.5); }
-   Glow azalt: :root { --title-white-core-glow-alpha:.25; --title-white-wide-glow-alpha:.15; }
-   Işık patlaması daha geniş: :root { --hero-glow-radius:54%; --hero-glow-blur:36px; }
-   Işık patlaması zayıf: :root { --hero-glow-strength:.75; }
-   Plate kapat: .hero-section::after { display:none; }
-   Step panel background koyula: .step-panel { background:linear-gradient(150deg, rgba(55,37,30,.62), rgba(42,27,23,.74)); }
-   Time slot yazısını büyüt: .time-slot { font-size:.7rem; }
-   Barber kart başlığı alt çizgi: .barber-name { border-bottom:1px solid rgba(255,255,255,.08); padding-bottom:2px; }
-   =================================================================== */
+*/
