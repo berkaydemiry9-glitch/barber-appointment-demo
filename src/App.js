@@ -1,42 +1,45 @@
 import React, { useState } from "react";
 import "./barber-theme.css";
 
-// Berber Hizmetleri
+// -- Atlanta Barbershop Services --
 const servicesList = [
-  { name: "Saç Kesimi", icon: "✂️", duration: 30 },
-  { name: "Sakal Tıraşı", icon: "🪒", duration: 20 },
-  { name: "Çocuk Saç Kesimi", icon: "🧒", duration: 25 },
-  { name: "Sakal Şekillendirme", icon: "🧔", duration: 15 },
-  { name: "Yıkama & Fön", icon: "💦", duration: 15 },
+  { name: "Haircut", icon: "💈", duration: 30 },
+  { name: "Beard Trim", icon: "🧔", duration: 20 },
+  { name: "Kids Haircut", icon: "🧒", duration: 25 },
+  { name: "Hot Towel Shave", icon: "🪒", duration: 25 },
+  { name: "Line Up", icon: "✂️", duration: 15 },
+  { name: "Fade", icon: "🎯", duration: 35 },
+  { name: "Shampoo & Style", icon: "🚿", duration: 20 },
+  { name: "Facial", icon: "🧖‍♂️", duration: 30 },
 ];
 
-// Dummy Barber List
+// -- Barber List (Atlanta) --
 const barbersList = [
   {
-    name: "Mustafa Usta",
-    img: "https://randomuser.me/api/portraits/men/45.jpg",
+    name: "Mike Johnson",
+    img: "https://randomuser.me/api/portraits/men/32.jpg",
     workingHours: [
-      null, // Pazar
-      { start: "09:00", end: "19:00" },
-      { start: "09:00", end: "19:00" },
-      { start: "09:00", end: "19:00" },
-      { start: "09:00", end: "19:00" },
-      { start: "09:00", end: "19:00" },
-      { start: "10:00", end: "17:00" },
+      null, // Sunday (closed)
+      { start: "09:00", end: "19:00" }, // Monday
+      { start: "09:00", end: "19:00" }, // Tuesday
+      { start: "09:00", end: "19:00" }, // Wednesday
+      { start: "09:00", end: "19:00" }, // Thursday
+      { start: "09:00", end: "19:00" }, // Friday
+      { start: "09:00", end: "17:00" }, // Saturday
     ],
     appointments: [],
   },
   {
-    name: "Ali",
-    img: "https://randomuser.me/api/portraits/men/58.jpg",
+    name: "Chris Evans",
+    img: "https://randomuser.me/api/portraits/men/45.jpg",
     workingHours: [
       null,
       { start: "10:00", end: "18:00" },
-      { start: "09:00", end: "17:30" },
-      { start: "09:00", end: "19:00" },
       { start: "09:00", end: "18:00" },
-      { start: "11:00", end: "19:30" },
-      { start: "10:00", end: "17:00" },
+      { start: "10:00", end: "19:00" },
+      { start: "09:30", end: "18:30" },
+      { start: "11:00", end: "19:00" },
+      { start: "09:00", end: "16:00" },
     ],
     appointments: [],
   },
@@ -49,6 +52,7 @@ function sumDurations(selectedNames) {
     .reduce((a, b) => a + b.duration, 0);
 }
 
+// -- US date format & 12-hour clock with AM/PM --
 function getNext7Days() {
   const today = new Date();
   return Array.from({ length: 7 }).map((_, i) => {
@@ -56,13 +60,19 @@ function getNext7Days() {
     d.setDate(today.getDate() + i);
     return {
       dateStr: d.toISOString().split("T")[0],
-      label: d.toLocaleDateString("tr-TR", { weekday: "short", day: "2-digit", month: "short" }),
+      label: d.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "2-digit" }),
       dayIdx: d.getDay(),
     };
   });
 }
 
-// Demo slot (her 30 dakikada bir slot)
+function to12Hour(hour, minute) {
+  const ampm = hour >= 12 ? "PM" : "AM";
+  let h = hour % 12;
+  if (h === 0) h = 12;
+  return `${h}:${minute.toString().padStart(2, "0")} ${ampm}`;
+}
+
 function getAvailableSlots({ workingHours, appointments, totalDuration, dateStr, slotInterval = 30 }) {
   const d = new Date(dateStr);
   const dayIdx = d.getDay();
@@ -76,22 +86,28 @@ function getAvailableSlots({ workingHours, appointments, totalDuration, dateStr,
     const slotStart = (h * 60 + m) + i * slotInterval;
     const slotEnd = slotStart + totalDuration;
     if (slotEnd > (eh * 60 + em)) break;
-    // dummy: çakışma kontrolü yok (sadece demo)
-    slots.push(
-      `${String(Math.floor(slotStart / 60)).padStart(2, "0")}:${String(slotStart % 60).padStart(2, "0")}`
-    );
+    const hour = Math.floor(slotStart / 60);
+    const minute = slotStart % 60;
+    slots.push(to12Hour(hour, minute));
   }
   return slots;
 }
 
 function addMinutes(time, mins) {
-  const [h, m] = time.split(":").map(Number);
-  const d = new Date(2025, 0, 1, h, m + mins);
-  return d.toTimeString().slice(0, 5);
+  // "hh:mm AM/PM" -> Date object -> add mins -> format back
+  const [t, meridian] = time.split(" ");
+  let [h, m] = t.split(":").map(Number);
+  if (meridian === "PM" && h !== 12) h += 12;
+  if (meridian === "AM" && h === 12) h = 0;
+  const d = new Date(2022, 0, 1, h, m + mins);
+  let hour = d.getHours();
+  const ampm = hour >= 12 ? "PM" : "AM";
+  hour = hour % 12;
+  hour = hour ? hour : 12;
+  return `${hour}:${String(d.getMinutes()).padStart(2, "0")} ${ampm}`;
 }
 
 export default function App() {
-  // State'ler
   const [step, setStep] = useState(1);
   const [selectedServices, setSelectedServices] = useState([]);
   const [selectedBarber, setSelectedBarber] = useState(null);
@@ -99,17 +115,17 @@ export default function App() {
   const [slot, setSlot] = useState("");
   const [customer, setCustomer] = useState({ name: "", phone: "", email: "" });
 
-  // 1. Adım: Hizmet Seçimi
+  // Step 1: Select Services
   if (step === 1) {
     const total = sumDurations(selectedServices);
     return (
       <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
         <div className="barber-header">
           <span className="barber-pole" />
-          Super Barber
+          Atlanta Barber Shop
         </div>
         <div className="barber-card" style={{ maxWidth: 600 }}>
-          <h2 style={{ textAlign: "center", color: "#b93434", marginBottom: "1.2rem" }}>Hizmet Seçimi</h2>
+          <h2 style={{ textAlign: "center", color: "#b93434", marginBottom: "1.2rem" }}>Choose Your Service(s)</h2>
           <div className="barber-services">
             {servicesList.map((s) => (
               <div
@@ -125,12 +141,12 @@ export default function App() {
               >
                 <span style={{ fontSize: "1.7em" }}>{s.icon}</span>
                 <span>{s.name}</span>
-                <span style={{ fontSize: "0.9em", color: "#b93434", fontWeight: 400 }}>{s.duration} dk</span>
+                <span style={{ fontSize: "0.9em", color: "#b93434", fontWeight: 400 }}>{s.duration} min</span>
               </div>
             ))}
           </div>
           <div style={{ textAlign: "right", color: "#b93434", marginTop: 10 }}>
-            <b>Toplam Süre:</b> {total} dk
+            <b>Total Duration:</b> {total} min
           </div>
           <button
             className="barber-btn"
@@ -138,23 +154,23 @@ export default function App() {
             disabled={selectedServices.length === 0}
             onClick={() => setStep(2)}
           >
-            Devam Et
+            Next
           </button>
         </div>
       </div>
     );
   }
 
-  // 2. Adım: Berber Seçimi
+  // Step 2: Select Barber
   if (step === 2) {
     return (
       <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
         <div className="barber-header">
           <span className="barber-pole" />
-          Super Barber
+          Atlanta Barber Shop
         </div>
         <div className="barber-card" style={{ maxWidth: 600 }}>
-          <h2 style={{ textAlign: "center", color: "#b93434", marginBottom: 24 }}>Berber Seçimi</h2>
+          <h2 style={{ textAlign: "center", color: "#b93434", marginBottom: 24 }}>Choose Your Barber</h2>
           <div style={{ display: "flex", gap: 30, justifyContent: "center", marginBottom: 30 }}>
             {barbersList.map((b) => (
               <button
@@ -183,14 +199,14 @@ export default function App() {
             ))}
           </div>
           <button className="barber-btn" style={{ width: "100%" }} onClick={() => setStep(1)}>
-            Geri Dön
+            Back
           </button>
         </div>
       </div>
     );
   }
 
-  // 3. Adım: Tarih & Saat
+  // Step 3: Date/Time
   if (step === 3) {
     const total = sumDurations(selectedServices);
     const days = getNext7Days();
@@ -207,10 +223,10 @@ export default function App() {
       <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
         <div className="barber-header">
           <span className="barber-pole" />
-          Super Barber
+          Atlanta Barber Shop
         </div>
         <div className="barber-card" style={{ maxWidth: 600 }}>
-          <h2 style={{ textAlign: "center", color: "#b93434", marginBottom: 20 }}>Tarih & Saat Seçimi</h2>
+          <h2 style={{ textAlign: "center", color: "#b93434", marginBottom: 20 }}>Pick Date & Time</h2>
           <div style={{ display: "flex", gap: 10, marginBottom: 18, justifyContent: "center" }}>
             {days.map(d => (
               <button
@@ -232,10 +248,10 @@ export default function App() {
           </div>
           {date && (
             <div>
-              <div style={{ color: "#b93434", fontWeight: 600, marginBottom: 7, textAlign: "center" }}>Uygun Saatler:</div>
+              <div style={{ color: "#b93434", fontWeight: 600, marginBottom: 7, textAlign: "center" }}>Available Slots:</div>
               <div style={{ display: "flex", flexWrap: "wrap", gap: 10, justifyContent: "center", marginBottom: 18 }}>
                 {availableSlots.length === 0 && (
-                  <span style={{ color: "#888" }}>Uygun saat yok</span>
+                  <span style={{ color: "#888" }}>No slots available</span>
                 )}
                 {availableSlots.map(t => (
                   <button
@@ -259,7 +275,7 @@ export default function App() {
           )}
           <div style={{ display: "flex", gap: 8 }}>
             <button className="barber-btn" style={{ flex: 1 }} onClick={() => setStep(2)}>
-              Geri Dön
+              Back
             </button>
             <button
               className="barber-btn"
@@ -267,7 +283,7 @@ export default function App() {
               disabled={!date || !slot}
               onClick={() => setStep(4)}
             >
-              Devam Et
+              Next
             </button>
           </div>
         </div>
@@ -275,36 +291,36 @@ export default function App() {
     );
   }
 
-  // 4. Adım: Bilgiler
+  // Step 4: Customer Info
   if (step === 4) {
     return (
       <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
         <div className="barber-header">
           <span className="barber-pole" />
-          Super Barber
+          Atlanta Barber Shop
         </div>
         <div className="barber-card" style={{ maxWidth: 600 }}>
-          <h2 style={{ textAlign: "center", color: "#b93434", marginBottom: 20 }}>Bilgileriniz</h2>
+          <h2 style={{ textAlign: "center", color: "#b93434", marginBottom: 20 }}>Your Information</h2>
           <input
-            placeholder="Ad Soyad"
+            placeholder="Full Name"
             value={customer.name}
             onChange={(e) => setCustomer((c) => ({ ...c, name: e.target.value }))}
             required
           />
           <input
-            placeholder="Telefon"
+            placeholder="Phone"
             value={customer.phone}
             onChange={(e) => setCustomer((c) => ({ ...c, phone: e.target.value }))}
             required
           />
           <input
-            placeholder="E-mail (opsiyonel)"
+            placeholder="Email (optional)"
             value={customer.email}
             onChange={(e) => setCustomer((c) => ({ ...c, email: e.target.value }))}
           />
           <div style={{ display: "flex", gap: 8 }}>
             <button className="barber-btn" style={{ flex: 1 }} onClick={() => setStep(3)}>
-              Geri Dön
+              Back
             </button>
             <button
               className="barber-btn"
@@ -312,7 +328,7 @@ export default function App() {
               disabled={!customer.name || !customer.phone}
               onClick={() => setStep(5)}
             >
-              Randevuyu Tamamla
+              Confirm Appointment
             </button>
           </div>
         </div>
@@ -320,24 +336,24 @@ export default function App() {
     );
   }
 
-  // 5. Adım: Başarı
+  // Step 5: Success
   return (
     <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
       <div className="barber-header">
         <span className="barber-pole" />
-        Super Barber
+        Atlanta Barber Shop
       </div>
       <div className="barber-card" style={{ maxWidth: 600, textAlign: "center" }}>
-        <h2 style={{ color: "#b93434", marginBottom: 18 }}>Randevunuz Alındı!</h2>
+        <h2 style={{ color: "#b93434", marginBottom: 18 }}>Your Appointment is Booked!</h2>
         <p style={{ color: "#1a2233", fontSize: "1.1em" }}>
-          Teşekkürler <b>{customer.name}</b>!<br />
-          Randevunuz başarıyla oluşturuldu.
+          Thank you <b>{customer.name}</b>!<br />
+          Your appointment has been successfully scheduled.
         </p>
         <div style={{ textAlign: "left", margin: "1.2em 0", color: "#b93434" }}>
-          <b>Seçilen Hizmetler:</b> {selectedServices.join(", ")}<br />
-          <b>Berber:</b> {selectedBarber?.name}<br />
-          <b>Tarih/Saat:</b> {date} {slot}<br />
-          <b>Telefon:</b> {customer.phone}
+          <b>Selected Services:</b> {selectedServices.join(", ")}<br />
+          <b>Barber:</b> {selectedBarber?.name}<br />
+          <b>Date/Time:</b> {date} {slot}<br />
+          <b>Phone:</b> {customer.phone}
         </div>
         <button
           className="barber-btn"
@@ -351,7 +367,7 @@ export default function App() {
             setCustomer({ name: "", phone: "", email: "" });
           }}
         >
-          Yeni Randevu Al
+          Book Another Appointment
         </button>
       </div>
     </div>
