@@ -54,6 +54,13 @@
   --title-shadow2: 0 2px 4px rgba(0,0,0,.55);
   --title-glow-soft: 0 0 6px rgba(230,190,150,.35);
   --title-glow-wide: 0 0 22px rgba(200,150,95,.28);
+
+  --title-gradient: linear-gradient(92deg,#fff8f1 0%,#f2dcc4 40%,#d3b497 78%,#b18d6c 100%);
+  --title-shadow-stack: 
+    0 1px 1px rgba(0,0,0,.55),
+    0 2px 4px rgba(0,0,0,.55),
+    0 0 6px rgba(230,190,150,.28),
+    0 0 18px rgba(200,150,95,.22);
 }
 
 /* ================= GLOBAL / SCROLL LOCK ================= */
@@ -179,20 +186,15 @@ a { color: var(--color-primary-amber-bright); text-decoration:none; }
 /* Title (reverted gradient) */
 .h1-brand {
   font-size: clamp(2.05rem, 3.9vw, 2.7rem);
-  line-height:1.06;
-  background: var(--title-grad);
+  line-height: 1.06;
+  background: var(--title-gradient);
   -webkit-background-clip: text;
-  color:transparent;
-  font-weight:700;
-  letter-spacing:.8px;
-  margin-bottom:.55rem;
-  text-shadow:
-    var(--title-shadow1),
-    var(--title-shadow2),
-    var(--title-glow-soft),
-    var(--title-glow-wide);
-  filter:
-    drop-shadow(0 2px 4px rgba(0,0,0,.55));
+  color: transparent;
+  font-weight: 700;
+  letter-spacing: .8px;
+  margin-bottom: .55rem;
+  text-shadow: var(--title-shadow-stack);
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,.50));
 }
 
 /* Subtext daha açık ve net */
