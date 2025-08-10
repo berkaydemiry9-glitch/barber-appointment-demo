@@ -9,7 +9,6 @@ const base = {
   strokeWidth: 2
 };
 
-// Basit çizgisel ikonlar (premium görünüme yakın minimal stil)
 export const IconCut = (props) => (
   <svg viewBox="0 0 24 24" {...base} stroke="currentColor" {...props}>
     <circle cx="7" cy="7" r="3" />
@@ -77,3 +76,8 @@ export const IconCheck = (props) => (
     <path d="m5 13 4 4 10-10" />
   </svg>
 );
+
+/* İstersen eski alışkanlık isimleri için alias ekleyebilirsin: */
+export const IconUserTie = IconFade;   // eski FaUserTie yerine geçici
+export const IconWater = IconShampoo;  // eski FaWater yerine
+export const IconSmile = IconFacial;   // eski FaSmile yerine
