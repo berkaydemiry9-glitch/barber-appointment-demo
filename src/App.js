@@ -1,68 +1,89 @@
 import React, { useState } from "react";
-import AdminPanel from "./AdminPanel";
-import AdminLogin from "./AdminLogin";
-import { getAvailableSlots, getNext7Days } from "./calendarUtils";
-import "./index.css";
+import "./barber-theme.css";
 
-// --- Services: name, icon, duration (minutes)
+// Berber Hizmetleri
 const servicesList = [
-  { name: "Haircut", icon: "💇‍♂️", duration: 30 },
-  { name: "Beard Trim", icon: "🧔", duration: 20 },
-  { name: "Kids Haircut", icon: "🧒", duration: 25 },
-  { name: "Shave", icon: "🪒", duration: 20 },
-  { name: "Haircut & Beard Combo", icon: "💇‍♂️🧔", duration: 45 },
-  { name: "Line Up", icon: "✂️", duration: 15 },
-  { name: "Head Shave", icon: "🧑‍🦲", duration: 30 },
-  { name: "Hot Towel Shave", icon: "🧖‍♂️", duration: 25 },
-  { name: "Hair Wash & Style", icon: "🚿", duration: 20 },
-  { name: "Facial", icon: "🧖‍♀️", duration: 30 }
+  { name: "Saç Kesimi", icon: "✂️", duration: 30 },
+  { name: "Sakal Tıraşı", icon: "🪒", duration: 20 },
+  { name: "Çocuk Saç Kesimi", icon: "🧒", duration: 25 },
+  { name: "Sakal Şekillendirme", icon: "🧔", duration: 15 },
+  { name: "Yıkama & Fön", icon: "💦", duration: 15 },
 ];
 
-// --- Dummy barber data: name, img, working hours (per day), appointments
+// Dummy Barber List
 const barbersList = [
   {
-    name: "Mike Johnson",
-    img: "https://randomuser.me/api/portraits/men/32.jpg",
+    name: "Mustafa Usta",
+    img: "https://randomuser.me/api/portraits/men/45.jpg",
     workingHours: [
-      null, // Sunday
-      { start: "09:00", end: "19:00" }, // Monday
-      { start: "09:00", end: "19:00" }, // Tuesday
-      { start: "12:00", end: "19:00" }, // Wednesday (late start)
-      { start: "09:00", end: "19:00" }, // Thursday
-      { start: "09:00", end: "19:00" }, // Friday
-      { start: "10:00", end: "17:00" }  // Saturday (shorter day)
+      null, // Pazar
+      { start: "09:00", end: "19:00" },
+      { start: "09:00", end: "19:00" },
+      { start: "09:00", end: "19:00" },
+      { start: "09:00", end: "19:00" },
+      { start: "09:00", end: "19:00" },
+      { start: "10:00", end: "17:00" },
     ],
-    appointments: [
-      // Example: an appointment on Monday, Aug 11: 10:00-10:45
-      { date: "2025-08-11", start: "10:00", end: "10:45" }
-    ]
+    appointments: [],
   },
   {
-    name: "Alex Smith",
-    img: "https://randomuser.me/api/portraits/men/12.jpg",
+    name: "Ali",
+    img: "https://randomuser.me/api/portraits/men/58.jpg",
     workingHours: [
       null,
+      { start: "10:00", end: "18:00" },
+      { start: "09:00", end: "17:30" },
       { start: "09:00", end: "19:00" },
-      { start: "09:00", end: "19:00" },
-      { start: "09:00", end: "19:00" },
-      { start: "09:00", end: "19:00" },
-      { start: "09:00", end: "19:00" },
-      { start: "09:00", end: "19:00" }
+      { start: "09:00", end: "18:00" },
+      { start: "11:00", end: "19:30" },
+      { start: "10:00", end: "17:00" },
     ],
-    appointments: [
-      // Tuesday blocked 11:00-12:00
-      { date: "2025-08-12", start: "11:00", end: "12:00" }
-    ]
-  }
+    appointments: [],
+  },
 ];
 
+// Helpers
 function sumDurations(selectedNames) {
   return servicesList
-    .filter(s => selectedNames.includes(s.name))
+    .filter((s) => selectedNames.includes(s.name))
     .reduce((a, b) => a + b.duration, 0);
 }
 
-// Utility: add minutes to "HH:MM" string
+function getNext7Days() {
+  const today = new Date();
+  return Array.from({ length: 7 }).map((_, i) => {
+    const d = new Date(today);
+    d.setDate(today.getDate() + i);
+    return {
+      dateStr: d.toISOString().split("T")[0],
+      label: d.toLocaleDateString("tr-TR", { weekday: "short", day: "2-digit", month: "short" }),
+      dayIdx: d.getDay(),
+    };
+  });
+}
+
+// Demo slot (her 30 dakikada bir slot)
+function getAvailableSlots({ workingHours, appointments, totalDuration, dateStr, slotInterval = 30 }) {
+  const d = new Date(dateStr);
+  const dayIdx = d.getDay();
+  const wh = workingHours[dayIdx];
+  if (!wh) return [];
+  const slots = [];
+  let [h, m] = wh.start.split(":").map(Number);
+  const [eh, em] = wh.end.split(":").map(Number);
+  const totalSlots = ((eh * 60 + em) - (h * 60 + m)) / slotInterval;
+  for (let i = 0; i < totalSlots; i++) {
+    const slotStart = (h * 60 + m) + i * slotInterval;
+    const slotEnd = slotStart + totalDuration;
+    if (slotEnd > (eh * 60 + em)) break;
+    // dummy: çakışma kontrolü yok (sadece demo)
+    slots.push(
+      `${String(Math.floor(slotStart / 60)).padStart(2, "0")}:${String(slotStart % 60).padStart(2, "0")}`
+    );
+  }
+  return slots;
+}
+
 function addMinutes(time, mins) {
   const [h, m] = time.split(":").map(Number);
   const d = new Date(2025, 0, 1, h, m + mins);
@@ -70,46 +91,30 @@ function addMinutes(time, mins) {
 }
 
 export default function App() {
-  // ADMIN PANEL URL
-  const adminPath = "/superbarberadmin";
-  const [isAdminLogged, setIsAdminLogged] = useState(false);
-
-  // Customer flow states
+  // State'ler
   const [step, setStep] = useState(1);
   const [selectedServices, setSelectedServices] = useState([]);
   const [selectedBarber, setSelectedBarber] = useState(null);
   const [date, setDate] = useState("");
   const [slot, setSlot] = useState("");
   const [customer, setCustomer] = useState({ name: "", phone: "", email: "" });
-  const [payment, setPayment] = useState("");
 
-  // Admin panel erişimi sadece özel URL ile mümkün!
-  if (window.location.pathname === adminPath) {
-    if (!isAdminLogged) {
-      return (
-        <AdminLogin
-          onSuccess={() => setIsAdminLogged(true)}
-          onCancel={() => { window.location.pathname = "/"; }}
-        />
-      );
-    }
-    return (
-      <AdminPanel onBack={() => { setIsAdminLogged(false); window.location.pathname = "/"; }} />
-    );
-  }
-
-  // Step 1: Select Services
+  // 1. Adım: Hizmet Seçimi
   if (step === 1) {
     const total = sumDurations(selectedServices);
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-bg">
-        <h1 className="text-4xl font-logo text-primary mb-2">Barber Appointment</h1>
-        <p className="mb-6 text-gray-500">Step 1: Select Service(s)</p>
-        <div className="max-w-xl w-full mx-auto bg-white p-8 rounded-3xl shadow-soft border border-primary/10 animate-fade-in">
-          <div className="grid grid-cols-2 gap-4 mb-4">
+      <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
+        <div className="barber-header">
+          <span className="barber-pole" />
+          Super Barber
+        </div>
+        <div className="barber-card" style={{ maxWidth: 600 }}>
+          <h2 style={{ textAlign: "center", color: "#b93434", marginBottom: "1.2rem" }}>Hizmet Seçimi</h2>
+          <div className="barber-services">
             {servicesList.map((s) => (
-              <button
+              <div
                 key={s.name}
+                className={`barber-service${selectedServices.includes(s.name) ? " selected" : ""}`}
                 onClick={() =>
                   setSelectedServices((prev) =>
                     prev.includes(s.name)
@@ -117,65 +122,75 @@ export default function App() {
                       : [...prev, s.name]
                   )
                 }
-                className={`flex items-center gap-3 px-4 py-3 rounded-xl border transition
-                  ${selectedServices.includes(s.name)
-                    ? "bg-primary text-white shadow"
-                    : "bg-bg border-primary/20 text-primary hover:bg-primary/10"}`}
-                type="button"
               >
-                <span className="text-2xl">{s.icon}</span>
+                <span style={{ fontSize: "1.7em" }}>{s.icon}</span>
                 <span>{s.name}</span>
-                <span className="ml-auto text-xs text-accent">{s.duration} min</span>
-              </button>
+                <span style={{ fontSize: "0.9em", color: "#b93434", fontWeight: 400 }}>{s.duration} dk</span>
+              </div>
             ))}
           </div>
-          <div className="mb-4 text-right text-primary">
-            <b>Total Duration:</b> {total} min
+          <div style={{ textAlign: "right", color: "#b93434", marginTop: 10 }}>
+            <b>Toplam Süre:</b> {total} dk
           </div>
           <button
+            className="barber-btn"
+            style={{ width: "100%", marginTop: 24 }}
             disabled={selectedServices.length === 0}
             onClick={() => setStep(2)}
-            className="w-full py-3 rounded-xl bg-accent text-primary font-semibold text-lg shadow transition hover:bg-primary hover:text-white disabled:opacity-40"
           >
-            Next
+            Devam Et
           </button>
         </div>
       </div>
     );
   }
 
-  // Step 2: Choose Barber
+  // 2. Adım: Berber Seçimi
   if (step === 2) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-bg">
-        <h1 className="text-4xl font-logo text-primary mb-2">Barber Appointment</h1>
-        <p className="mb-6 text-gray-500">Step 2: Select Barber</p>
-        <div className="max-w-xl w-full mx-auto bg-white p-8 rounded-3xl shadow-soft border border-primary/10 animate-fade-in">
-          <div className="flex flex-col gap-4 mb-6">
+      <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
+        <div className="barber-header">
+          <span className="barber-pole" />
+          Super Barber
+        </div>
+        <div className="barber-card" style={{ maxWidth: 600 }}>
+          <h2 style={{ textAlign: "center", color: "#b93434", marginBottom: 24 }}>Berber Seçimi</h2>
+          <div style={{ display: "flex", gap: 30, justifyContent: "center", marginBottom: 30 }}>
             {barbersList.map((b) => (
               <button
                 key={b.name}
                 onClick={() => { setSelectedBarber(b); setStep(3); }}
-                className={`flex items-center gap-4 px-4 py-3 rounded-xl border transition
-                  ${selectedBarber && selectedBarber.name === b.name
-                    ? "bg-primary text-white shadow"
-                    : "bg-bg border-primary/20 text-primary hover:bg-primary/10"}`}
-                type="button"
+                style={{
+                  border: selectedBarber?.name === b.name ? "2.5px solid #f6c453" : "2px solid #b93434",
+                  background: selectedBarber?.name === b.name ? "#b93434" : "#fff6ec",
+                  color: selectedBarber?.name === b.name ? "#fff" : "#1a2233",
+                  borderRadius: 16,
+                  padding: 18,
+                  boxShadow: "0 1px 8px #1a223344",
+                  cursor: "pointer",
+                  minWidth: 120,
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  gap: 8,
+                  fontWeight: 500,
+                  fontSize: "1.12em"
+                }}
               >
-                <img src={b.img} alt={b.name} className="w-12 h-12 rounded-full border-2 border-accent shadow" />
-                <span className="font-semibold">{b.name}</span>
+                <img src={b.img} alt={b.name} style={{ width: 54, height: 54, borderRadius: "50%", border: "2.5px solid #f6c453", marginBottom: 4 }} />
+                {b.name}
               </button>
             ))}
           </div>
-          <button onClick={() => setStep(1)} className="py-2 px-4 rounded-xl border text-primary border-primary/40 bg-bg hover:bg-primary/5 transition">
-            Back
+          <button className="barber-btn" style={{ width: "100%" }} onClick={() => setStep(1)}>
+            Geri Dön
           </button>
         </div>
       </div>
     );
   }
 
-  // Step 3: Date & Slot Selection
+  // 3. Adım: Tarih & Saat
   if (step === 3) {
     const total = sumDurations(selectedServices);
     const days = getNext7Days();
@@ -188,44 +203,53 @@ export default function App() {
         slotInterval: 30
       })
       : [];
-
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-bg">
-        <h1 className="text-4xl font-logo text-primary mb-2">Barber Appointment</h1>
-        <p className="mb-6 text-gray-500">Step 3: Pick Date & Time</p>
-        <div className="max-w-xl w-full mx-auto bg-white p-8 rounded-3xl shadow-soft border border-primary/10 animate-fade-in">
-          <div className="mb-5">
-            <div className="mb-1 text-primary font-semibold">Pick a day:</div>
-            <div className="flex gap-2">
-              {days.map(d => (
-                <button
-                  key={d.dateStr}
-                  onClick={() => { setDate(d.dateStr); setSlot(""); }}
-                  className={`px-3 py-2 rounded-xl border transition
-                    ${date === d.dateStr
-                      ? "bg-primary text-white shadow"
-                      : "bg-bg border-primary/20 text-primary hover:bg-primary/10"}`}
-                >
-                  {d.label}
-                </button>
-              ))}
-            </div>
+      <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
+        <div className="barber-header">
+          <span className="barber-pole" />
+          Super Barber
+        </div>
+        <div className="barber-card" style={{ maxWidth: 600 }}>
+          <h2 style={{ textAlign: "center", color: "#b93434", marginBottom: 20 }}>Tarih & Saat Seçimi</h2>
+          <div style={{ display: "flex", gap: 10, marginBottom: 18, justifyContent: "center" }}>
+            {days.map(d => (
+              <button
+                key={d.dateStr}
+                onClick={() => { setDate(d.dateStr); setSlot(""); }}
+                className="barber-btn"
+                style={{
+                  background: date === d.dateStr ? "#b93434" : "#fff",
+                  color: date === d.dateStr ? "#fff" : "#b93434",
+                  border: "1.5px solid #b93434",
+                  fontWeight: 600,
+                  fontSize: 16,
+                  padding: "0.6em 1em"
+                }}
+              >
+                {d.label}
+              </button>
+            ))}
           </div>
           {date && (
             <div>
-              <div className="mb-1 text-primary font-semibold">Available time slots:</div>
-              <div className="flex flex-wrap gap-2 mb-8">
+              <div style={{ color: "#b93434", fontWeight: 600, marginBottom: 7, textAlign: "center" }}>Uygun Saatler:</div>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 10, justifyContent: "center", marginBottom: 18 }}>
                 {availableSlots.length === 0 && (
-                  <span className="text-gray-400 italic">No available slots for this day</span>
+                  <span style={{ color: "#888" }}>Uygun saat yok</span>
                 )}
                 {availableSlots.map(t => (
                   <button
                     key={t}
                     onClick={() => setSlot(t)}
-                    className={`px-4 py-2 rounded-xl border transition
-                      ${slot === t
-                        ? "bg-accent text-primary shadow"
-                        : "bg-bg border-primary/20 text-primary hover:bg-primary/10"}`}
+                    className="barber-btn"
+                    style={{
+                      background: slot === t ? "#f6c453" : "#fff",
+                      color: slot === t ? "#b93434" : "#b93434",
+                      border: "1.5px solid #b93434",
+                      fontWeight: 600,
+                      fontSize: 15,
+                      padding: "0.5em 1em"
+                    }}
                   >
                     {t} - {addMinutes(t, total)}
                   </button>
@@ -233,16 +257,17 @@ export default function App() {
               </div>
             </div>
           )}
-          <div className="flex gap-2">
-            <button onClick={() => setStep(2)} className="flex-1 py-2 rounded-xl border text-primary border-primary/40 bg-bg hover:bg-primary/5 transition">
-              Back
+          <div style={{ display: "flex", gap: 8 }}>
+            <button className="barber-btn" style={{ flex: 1 }} onClick={() => setStep(2)}>
+              Geri Dön
             </button>
             <button
+              className="barber-btn"
+              style={{ flex: 1, background: !date || !slot ? "#b9343488" : "" }}
               disabled={!date || !slot}
               onClick={() => setStep(4)}
-              className="flex-1 py-2 rounded-xl bg-accent text-primary font-semibold shadow hover:bg-primary hover:text-white disabled:opacity-40"
             >
-              Next
+              Devam Et
             </button>
           </div>
         </div>
@@ -250,55 +275,44 @@ export default function App() {
     );
   }
 
-  // Step 4: Customer Info
+  // 4. Adım: Bilgiler
   if (step === 4) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-bg">
-        <h1 className="text-4xl font-logo text-primary mb-2">Barber Appointment</h1>
-        <p className="mb-6 text-gray-500">Step 4: Your Information</p>
-        <div className="max-w-xl w-full mx-auto bg-white p-8 rounded-3xl shadow-soft border border-primary/10 animate-fade-in">
-          <div className="mb-6 flex flex-col gap-3">
-            <label className="text-gray-700 font-semibold">Full name:</label>
-            <input
-              placeholder="Your name"
-              value={customer.name}
-              onChange={(e) =>
-                setCustomer((c) => ({ ...c, name: e.target.value }))
-              }
-              className="w-full border rounded-xl px-3 py-2 focus:outline-accent"
-            />
-            <label className="text-gray-700 font-semibold">Phone:</label>
-            <input
-              placeholder="Phone number"
-              value={customer.phone}
-              onChange={(e) =>
-                setCustomer((c) => ({ ...c, phone: e.target.value }))
-              }
-              className="w-full border rounded-xl px-3 py-2 focus:outline-accent"
-            />
-            <label className="text-gray-700 font-semibold">Email (optional):</label>
-            <input
-              placeholder="Email address"
-              value={customer.email}
-              onChange={(e) =>
-                setCustomer((c) => ({ ...c, email: e.target.value }))
-              }
-              className="w-full border rounded-xl px-3 py-2 focus:outline-accent"
-            />
-          </div>
-          <div className="flex gap-2">
-            <button
-              onClick={() => setStep(3)}
-              className="flex-1 py-2 rounded-xl border text-primary border-primary/40 bg-bg hover:bg-primary/5 transition"
-            >
-              Back
+      <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
+        <div className="barber-header">
+          <span className="barber-pole" />
+          Super Barber
+        </div>
+        <div className="barber-card" style={{ maxWidth: 600 }}>
+          <h2 style={{ textAlign: "center", color: "#b93434", marginBottom: 20 }}>Bilgileriniz</h2>
+          <input
+            placeholder="Ad Soyad"
+            value={customer.name}
+            onChange={(e) => setCustomer((c) => ({ ...c, name: e.target.value }))}
+            required
+          />
+          <input
+            placeholder="Telefon"
+            value={customer.phone}
+            onChange={(e) => setCustomer((c) => ({ ...c, phone: e.target.value }))}
+            required
+          />
+          <input
+            placeholder="E-mail (opsiyonel)"
+            value={customer.email}
+            onChange={(e) => setCustomer((c) => ({ ...c, email: e.target.value }))}
+          />
+          <div style={{ display: "flex", gap: 8 }}>
+            <button className="barber-btn" style={{ flex: 1 }} onClick={() => setStep(3)}>
+              Geri Dön
             </button>
             <button
+              className="barber-btn"
+              style={{ flex: 1, background: !customer.name || !customer.phone ? "#b9343488" : "" }}
               disabled={!customer.name || !customer.phone}
               onClick={() => setStep(5)}
-              className="flex-1 py-2 rounded-xl bg-accent text-primary font-semibold shadow hover:bg-primary hover:text-white disabled:opacity-40"
             >
-              Next
+              Randevuyu Tamamla
             </button>
           </div>
         </div>
@@ -306,107 +320,28 @@ export default function App() {
     );
   }
 
-  // Step 5: Payment
-  if (step === 5) {
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-bg">
-        <h1 className="text-4xl font-logo text-primary mb-2">Barber Appointment</h1>
-        <p className="mb-6 text-gray-500">Step 5: Payment Option</p>
-        <div className="max-w-xl w-full mx-auto bg-white p-8 rounded-3xl shadow-soft border border-primary/10 animate-fade-in">
-          <div className="mb-6 flex flex-col gap-4">
-            {[
-              { val: "deposit", label: "Pay deposit now (rest in shop)" },
-              { val: "full-online", label: "Pay full amount now online" },
-              { val: "in-shop", label: "Pay in shop (cash/card)" }
-            ].map(opt => (
-              <label
-                key={opt.val}
-                className={`flex items-center gap-3 px-4 py-2 rounded-xl border transition cursor-pointer
-                  ${payment === opt.val
-                    ? "bg-primary text-white shadow"
-                    : "bg-bg border-primary/20 text-primary hover:bg-primary/10"}`}
-              >
-                <input
-                  type="radio"
-                  name="payment"
-                  checked={payment === opt.val}
-                  onChange={() => setPayment(opt.val)}
-                  className="accent-accent"
-                />
-                {opt.label}
-              </label>
-            ))}
-          </div>
-          <div className="flex gap-2">
-            <button
-              onClick={() => setStep(4)}
-              className="flex-1 py-2 rounded-xl border text-primary border-primary/40 bg-bg hover:bg-primary/5 transition"
-            >
-              Back
-            </button>
-            <button
-              disabled={!payment}
-              onClick={() => setStep(6)}
-              className="flex-1 py-2 rounded-xl bg-accent text-primary font-semibold shadow hover:bg-primary hover:text-white disabled:opacity-40"
-            >
-              Next
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // Step 6: Review & Confirm
-  if (step === 6) {
-    const total = sumDurations(selectedServices);
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-bg">
-        <h1 className="text-4xl font-logo text-primary mb-2">Barber Appointment</h1>
-        <p className="mb-6 text-gray-500">Review & Confirm</p>
-        <div className="max-w-xl w-full mx-auto bg-white p-8 rounded-3xl shadow-soft border border-primary/10 animate-fade-in">
-          <div className="mb-6 space-y-2">
-            <div><span className="font-semibold">Services:</span> {selectedServices.join(", ")}</div>
-            <div><span className="font-semibold">Barber:</span> {selectedBarber?.name}</div>
-            <div><span className="font-semibold">Date:</span> {date}</div>
-            <div><span className="font-semibold">Time:</span> {slot} - {addMinutes(slot, total)}</div>
-            <div><span className="font-semibold">Name:</span> {customer.name}</div>
-            <div><span className="font-semibold">Phone:</span> {customer.phone}</div>
-            <div><span className="font-semibold">Email:</span> {customer.email}</div>
-            <div><span className="font-semibold">Payment Option:</span> {payment}</div>
-          </div>
-          <button
-            onClick={() => setStep(7)}
-            className="w-full py-3 rounded-xl bg-primary text-white font-semibold text-lg shadow transition hover:bg-accent hover:text-primary"
-          >
-            Confirm Appointment
-          </button>
-          <button
-            onClick={() => setStep(5)}
-            className="w-full mt-2 py-2 rounded-xl border text-primary border-primary/40 bg-bg hover:bg-primary/5 transition"
-          >
-            Back
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  // Step 7: Success
+  // 5. Adım: Başarı
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-bg">
-      <h1 className="text-4xl font-logo text-accent mb-4">Appointment Confirmed!</h1>
-      <div className="bg-white rounded-3xl shadow-soft p-8 border border-primary/10 max-w-md w-full animate-fade-in">
-        <p className="text-primary text-lg mb-4">Thank you, {customer.name}! Your appointment is booked.</p>
-        <div className="mb-4">
-          <span className="block text-gray-500">Details:</span>
-          <ul className="text-primary mt-2 space-y-1">
-            <li><b>Services:</b> {selectedServices.join(", ")}</li>
-            <li><b>Barber:</b> {selectedBarber?.name}</li>
-            <li><b>Date/Time:</b> {date} {slot}</li>
-          </ul>
+    <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
+      <div className="barber-header">
+        <span className="barber-pole" />
+        Super Barber
+      </div>
+      <div className="barber-card" style={{ maxWidth: 600, textAlign: "center" }}>
+        <h2 style={{ color: "#b93434", marginBottom: 18 }}>Randevunuz Alındı!</h2>
+        <p style={{ color: "#1a2233", fontSize: "1.1em" }}>
+          Teşekkürler <b>{customer.name}</b>!<br />
+          Randevunuz başarıyla oluşturuldu.
+        </p>
+        <div style={{ textAlign: "left", margin: "1.2em 0", color: "#b93434" }}>
+          <b>Seçilen Hizmetler:</b> {selectedServices.join(", ")}<br />
+          <b>Berber:</b> {selectedBarber?.name}<br />
+          <b>Tarih/Saat:</b> {date} {slot}<br />
+          <b>Telefon:</b> {customer.phone}
         </div>
         <button
+          className="barber-btn"
+          style={{ width: "100%" }}
           onClick={() => {
             setStep(1);
             setSelectedServices([]);
@@ -414,11 +349,9 @@ export default function App() {
             setDate("");
             setSlot("");
             setCustomer({ name: "", phone: "", email: "" });
-            setPayment("");
           }}
-          className="w-full py-3 rounded-xl bg-primary text-white font-semibold text-lg shadow transition hover:bg-accent hover:text-primary"
         >
-          Book Another
+          Yeni Randevu Al
         </button>
       </div>
     </div>
