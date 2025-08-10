@@ -14,7 +14,7 @@ import {
 
 // ===== Data =====
 const servicesList = [
-  { key: "haircut", name: "Haircut", duration: 30, icon: FaCut },
+  { key: "haircut", name: "Haircut", duration: 30, icon: IconCut },
   { key: "beard", name: "Beard Trim", duration: 20, icon: FaRazor },
   { key: "kids", name: "Kids Haircut", duration: 25, icon: FaChild },
   { key: "hotTowel", name: "Hot Towel Shave", duration: 25, icon: FaHotTub },
