@@ -1,0 +1,183 @@
+/* ==== REVIEW / CONFIRM STEP STYLES (v3.7b add-on) ==== */
+
+.confirm-panel {
+  display:flex;
+  flex-direction:column;
+  gap:1.15rem;
+}
+
+.confirm-header {
+  text-align:left;
+}
+
+.confirm-title {
+  font-size:clamp(1.6rem,3vw,2.1rem);
+  margin:0 0 .35rem;
+  letter-spacing:.75px;
+}
+
+.confirm-subtext {
+  margin:0;
+  font-size:.82rem;
+  letter-spacing:.4px;
+  color:var(--color-text-light);
+  text-shadow:0 1px 2px rgba(0,0,0,.55);
+}
+
+.confirm-grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(190px,1fr));
+  gap:.85rem;
+}
+
+.confirm-card {
+  position:relative;
+  background:
+    linear-gradient(150deg, rgba(55,37,30,.42), rgba(42,27,23,.56)),
+    linear-gradient(185deg, rgba(40,27,22,.72), rgba(32,22,18,.82));
+  border:1px solid rgba(255,255,255,.05);
+  border-radius:18px;
+  padding:.85rem .85rem .8rem;
+  box-shadow:0 2px 5px -2px rgba(0,0,0,.55);
+  display:flex;
+  flex-direction:column;
+  gap:.4rem;
+  cursor:pointer;
+  transition:var(--transition);
+  min-height:120px;
+}
+.confirm-card:hover {
+  border-color:#b8682c;
+  transform:translateY(-3px);
+  box-shadow:0 8px 22px -12px rgba(0,0,0,.7), 0 4px 10px -5px rgba(0,0,0,.55);
+}
+.confirm-card--full {
+  grid-column:1 / -1;
+  min-height:100px;
+}
+
+.confirm-card-label-row {
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:.5rem;
+}
+
+.confirm-card-label {
+  font-size:.58rem;
+  letter-spacing:.85px;
+  font-weight:650;
+  color:var(--color-text-light);
+  opacity:.75;
+  text-transform:uppercase;
+  text-shadow:0 1px 2px rgba(0,0,0,.6);
+}
+
+.confirm-edit {
+  background:none;
+  border:none;
+  padding:0;
+  font-size:.55rem;
+  letter-spacing:.9px;
+  text-transform:uppercase;
+  font-weight:650;
+  color:var(--color-primary-amber-bright);
+  cursor:pointer;
+  transition:.2s;
+  text-shadow:0 1px 2px rgba(0,0,0,.6);
+}
+.confirm-edit:hover { color:#fff; text-shadow:0 0 6px rgba(226,168,80,.8); }
+
+.confirm-card-value {
+  font-size:.9rem;
+  font-weight:600;
+  line-height:1.2;
+  color:var(--color-text);
+  text-shadow:0 1px 2px rgba(0,0,0,.55);
+  word-break:break-word;
+  white-space:pre-wrap;
+}
+
+.confirm-card-meta {
+  margin-top:auto;
+  font-size:.6rem;
+  letter-spacing:.8px;
+  text-transform:uppercase;
+  color:var(--color-text-light);
+  opacity:.8;
+  font-weight:600;
+  text-shadow:0 1px 2px rgba(0,0,0,.55);
+}
+
+.confirm-actions {
+  margin-top:.4rem;
+  display:flex;
+  gap:.75rem;
+  justify-content:flex-end;
+  flex-wrap:wrap;
+}
+
+.confirm-error {
+  background:linear-gradient(145deg,#612421,#3c1614);
+  border:1px solid #a9423d;
+  color:#ffe9e7;
+  padding:.7rem .85rem;
+  border-radius:14px;
+  font-size:.75rem;
+  letter-spacing:.4px;
+  box-shadow:0 4px 14px -8px rgba(0,0,0,.55);
+  text-shadow:0 1px 2px rgba(0,0,0,.65);
+}
+
+.confirm-disclaimer {
+  margin:.2rem 0 0;
+  font-size:.55rem;
+  letter-spacing:.7px;
+  text-transform:uppercase;
+  color:var(--color-text-light);
+  opacity:.6;
+  text-align:right;
+}
+.confirm-disclaimer a {
+  color:var(--color-primary-amber-bright);
+  text-decoration:none;
+}
+.confirm-disclaimer a:hover { color:#fff; }
+
+.success-panel {
+  display:flex;
+  flex-direction:column;
+  gap:.9rem;
+  text-align:center;
+  align-items:center;
+}
+.success-title {
+  margin:0;
+  font-size:clamp(1.9rem,3.2vw,2.4rem);
+  letter-spacing:.85px;
+}
+.success-subtext {
+  margin:0;
+  font-size:.85rem;
+  letter-spacing:.45px;
+  color:var(--color-text-light);
+  text-shadow:0 1px 2px rgba(0,0,0,.6);
+  max-width:520px;
+}
+.success-actions { display:flex; gap:.8rem; margin-top:.35rem; }
+
+/* Hover/focus nüansları */
+.confirm-card:focus-visible {
+  outline:none;
+  border-color:var(--color-primary-amber);
+  box-shadow:0 0 0 2px rgba(255,255,255,.15), 0 0 0 6px rgba(181,101,22,.45);
+}
+
+/* Mobil düzenleme */
+@media (max-width:680px) {
+  .confirm-grid { grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:.65rem; }
+  .confirm-card { min-height:110px; padding:.75rem .75rem .7rem; }
+  .confirm-card-value { font-size:.82rem; }
+  .confirm-title { font-size:clamp(1.4rem,5vw,1.85rem); }
+  .success-title { font-size:clamp(1.6rem,6vw,2.05rem); }
+}
