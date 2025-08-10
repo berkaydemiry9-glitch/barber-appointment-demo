@@ -15,13 +15,13 @@ import {
 // ===== Data =====
 const servicesList = [
   { key: "haircut", name: "Haircut", duration: 30, icon: IconCut },
-  { key: "beard", name: "Beard Trim", duration: 20, icon: FaRazor },
-  { key: "kids", name: "Kids Haircut", duration: 25, icon: FaChild },
-  { key: "hotTowel", name: "Hot Towel Shave", duration: 25, icon: FaHotTub },
-  { key: "lineup", name: "Line Up", duration: 15, icon: FaAlignCenter },
-  { key: "fade", name: "Fade", duration: 35, icon: FaUserTie },
-  { key: "shampoo", name: "Shampoo & Style", duration: 20, icon: FaWater },
-  { key: "facial", name: "Facial", duration: 30, icon: FaSmile }
+  { key: "beard", name: "Beard Trim", duration: 20, icon: IconRazor },
+  { key: "kids", name: "Kids Haircut", duration: 25, icon: IconChild },
+  { key: "hotTowel", name: "Hot Towel Shave", duration: 25, icon: IconHotTub },
+  { key: "lineup", name: "Line Up", duration: 15, icon: IconAlignCenter },
+  { key: "fade", name: "Fade", duration: 35, icon: IconUserTie },
+  { key: "shampoo", name: "Shampoo & Style", duration: 20, icon: IconWater },
+  { key: "facial", name: "Facial", duration: 30, icon: IconSmile }
 ];
 
 const barbersList = [
