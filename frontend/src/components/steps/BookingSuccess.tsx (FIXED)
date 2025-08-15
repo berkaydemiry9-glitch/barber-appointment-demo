@@ -1,0 +1,20 @@
+import React from "react";
+
+interface Props {
+  onNew?: () => void;
+  code?: string;
+}
+const BookingSuccess: React.FC<Props> = ({ onNew, code }) => {
+  return (
+    <div className="step-panel success-panel">
+      <h2 className="success-title h1-brand--flat">Appointment Confirmed</h2>
+      <p className="success-subtext">
+        Thank you{code ? ` (#${code})` : ""}. You’ll receive a reminder.
+      </p>
+      <div className="success-actions">
+        <button className="btn" onClick={onNew}>Book Another</button>
+      </div>
+    </div>
+  );
+};
+export default BookingSuccess;
