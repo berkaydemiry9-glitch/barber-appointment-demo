@@ -1,0 +1,84 @@
+import React from "react";
+
+export interface BookingDraft {
+  services: { id: string; name: string; durationMin: number; price?: number }[];
+  barber?: { id: string; name: string };
+  dateISO?: string;
+  timeLabel?: string;   // "13:00"
+  phone?: string;
+  email?: string;
+  notes?: string;
+  totalDurationMin: number;
+}
+
+interface Props {
+  draft: BookingDraft;
+  onEditSection: (section: "services"|"schedule"|"barber"|"details") => void;
+  onConfirm: () => Promise<void> | void;
+  confirming: boolean;
+  error?: string | null;
+}
+
+const ReviewConfirmStep: React.FC<Props> = ({ draft, onEditSection, onConfirm, confirming, error }) => {
+  const serviceNames = draft.services.map(s => s.name).join(", ");
+  const durationLabel = `${draft.totalDurationMin} min`;
+
+  return (
+    <div className="step-panel confirm-panel">
+      <div className="confirm-header">
+        <h2 className="confirm-title h1-brand--flat">Review your booking</h2>
+        <p className="confirm-subtext">Tap a card to edit any section.</p>
+      </div>
+
+      <div className="confirm-grid">
+        <ConfirmCard label="SERVICES" value={serviceNames} meta={durationLabel} onEdit={() => onEditSection("services")} />
+        <ConfirmCard label="BARBER" value={draft.barber?.name || "-"} onEdit={() => onEditSection("barber")} />
+        <ConfirmCard label="DATE" value={draft.dateISO || "-"} onEdit={() => onEditSection("schedule")} />
+        <ConfirmCard label="TIME" value={draft.timeLabel || "-"} onEdit={() => onEditSection("schedule")} />
+        <ConfirmCard label="PHONE" value={draft.phone || "-"} onEdit={() => onEditSection("details")} />
+        <ConfirmCard label="EMAIL" value={draft.email || "-"} onEdit={() => onEditSection("details")} />
+        {draft.notes ? <ConfirmCard label="NOTES" value={draft.notes} onEdit={() => onEditSection("details")} full /> : null}
+      </div>
+
+      {error && <div className="confirm-error">{error}</div>}
+
+      <div className="confirm-actions">
+        <button type="button" className="btn-secondary" onClick={() => onEditSection("details")} disabled={confirming}>
+          Back
+        </button>
+        <button type="button" className="btn" onClick={onConfirm} disabled={confirming}>
+          {confirming ? "Confirming..." : "CONFIRM BOOKING"}
+        </button>
+      </div>
+
+      <p className="confirm-disclaimer">
+        By confirming, you agree to our <a href="/terms" target="_blank" rel="noopener noreferrer">Terms</a> and
+        <a href="/privacy" target="_blank" rel="noopener noreferrer"> Privacy Policy</a>.
+      </p>
+    </div>
+  );
+};
+
+interface CardProps {
+  label: string;
+  value: React.ReactNode;
+  meta?: string;
+  onEdit?: () => void;
+  full?: boolean;
+}
+const ConfirmCard: React.FC<CardProps> = ({ label, value, meta, onEdit, full }) => (
+  <div className={`confirm-card${full ? " confirm-card--full" : ""}`} onClick={onEdit}>
+    <div className="confirm-card-label-row">
+      <span className="confirm-card-label">{label}</span>
+      {onEdit && (
+        <button type="button" className="confirm-edit" onClick={(e) => { e.stopPropagation(); onEdit(); }}>
+          Edit
+        </button>
+      )}
+    </div>
+    <div className="confirm-card-value">{value}</div>
+    {meta && <div className="confirm-card-meta">{meta}</div>}
+  </div>
+);
+
+export default ReviewConfirmStep;
